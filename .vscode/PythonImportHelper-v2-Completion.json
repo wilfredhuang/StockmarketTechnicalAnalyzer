@@ -1,0 +1,180 @@
+[
+    {
+        "label": "yfinance",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "yfinance",
+        "description": "yfinance",
+        "detail": "yfinance",
+        "documentation": {}
+    },
+    {
+        "label": "pandas",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "pandas",
+        "description": "pandas",
+        "detail": "pandas",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "timedelta",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "Blueprint",
+        "importPath": "flask",
+        "description": "flask",
+        "isExtraImport": true,
+        "detail": "flask",
+        "documentation": {}
+    },
+    {
+        "label": "render_template",
+        "importPath": "flask",
+        "description": "flask",
+        "isExtraImport": true,
+        "detail": "flask",
+        "documentation": {}
+    },
+    {
+        "label": "flash",
+        "importPath": "flask",
+        "description": "flask",
+        "isExtraImport": true,
+        "detail": "flask",
+        "documentation": {}
+    },
+    {
+        "label": "redirect",
+        "importPath": "flask",
+        "description": "flask",
+        "isExtraImport": true,
+        "detail": "flask",
+        "documentation": {}
+    },
+    {
+        "label": "url_for",
+        "importPath": "flask",
+        "description": "flask",
+        "isExtraImport": true,
+        "detail": "flask",
+        "documentation": {}
+    },
+    {
+        "label": "Flask",
+        "importPath": "flask",
+        "description": "flask",
+        "isExtraImport": true,
+        "detail": "flask",
+        "documentation": {}
+    },
+    {
+        "label": "render_template",
+        "importPath": "flask",
+        "description": "flask",
+        "isExtraImport": true,
+        "detail": "flask",
+        "documentation": {}
+    },
+    {
+        "label": "fetch_and_process_stock_data",
+        "importPath": "helpers.stock_utils",
+        "description": "helpers.stock_utils",
+        "isExtraImport": true,
+        "detail": "helpers.stock_utils",
+        "documentation": {}
+    },
+    {
+        "label": "os",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "os",
+        "description": "os",
+        "detail": "os",
+        "documentation": {}
+    },
+    {
+        "label": "main_bp",
+        "importPath": "routes.main",
+        "description": "routes.main",
+        "isExtraImport": true,
+        "detail": "routes.main",
+        "documentation": {}
+    },
+    {
+        "label": "fetch_and_process_stock_data",
+        "kind": 2,
+        "importPath": "helpers.stock_utils",
+        "description": "helpers.stock_utils",
+        "peekOfCode": "def fetch_and_process_stock_data():\n    # List of 20 U.S. stocks (you can modify this list)\n    stocks = ['AAPL', 'MSFT', 'AMZN', 'GOOGL', 'FB', 'TSLA', 'BRK-B', 'JPM', 'JNJ', 'V', 'PG', 'UNH', 'MA', 'NVDA', 'HD', 'DIS', 'BAC', 'ADBE', 'CRM', 'NFLX']\n    end_date = datetime.now()  # Current date OR datetime(2024, 1, 1) - 01/01/24\n    start_date = end_date - timedelta(days=3652)  # Approximately 10 years\n    all_data = []\n    for stock in stocks:\n        ticker = yf.Ticker(stock)\n        data = ticker.history(start=start_date, end=end_date)\n        data['Symbol'] = stock",
+        "detail": "helpers.stock_utils",
+        "documentation": {}
+    },
+    {
+        "label": "index",
+        "kind": 2,
+        "importPath": "routes.main",
+        "description": "routes.main",
+        "peekOfCode": "def index():\n    return render_template('index.html')\n@main_bp.route('/fetch-stock-data', methods=['POST'])\ndef fetch_stock_data():\n    try:\n        csv_filename = fetch_and_process_stock_data()\n        flash(f'Stock data successfully fetched and saved as {csv_filename}', 'success')\n    except Exception as e:\n        flash(f'Error fetching stock data: {str(e)}', 'danger')\n    return redirect(url_for('main.index'))",
+        "detail": "routes.main",
+        "documentation": {}
+    },
+    {
+        "label": "fetch_stock_data",
+        "kind": 2,
+        "importPath": "routes.main",
+        "description": "routes.main",
+        "peekOfCode": "def fetch_stock_data():\n    try:\n        csv_filename = fetch_and_process_stock_data()\n        flash(f'Stock data successfully fetched and saved as {csv_filename}', 'success')\n    except Exception as e:\n        flash(f'Error fetching stock data: {str(e)}', 'danger')\n    return redirect(url_for('main.index'))",
+        "detail": "routes.main",
+        "documentation": {}
+    },
+    {
+        "label": "main_bp",
+        "kind": 5,
+        "importPath": "routes.main",
+        "description": "routes.main",
+        "peekOfCode": "main_bp = Blueprint('main', __name__)\n@main_bp.route('/')\ndef index():\n    return render_template('index.html')\n@main_bp.route('/fetch-stock-data', methods=['POST'])\ndef fetch_stock_data():\n    try:\n        csv_filename = fetch_and_process_stock_data()\n        flash(f'Stock data successfully fetched and saved as {csv_filename}', 'success')\n    except Exception as e:",
+        "detail": "routes.main",
+        "documentation": {}
+    },
+    {
+        "label": "not_found_error",
+        "kind": 2,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "def not_found_error(error):\n    return render_template('404.html'), 404\n@app.errorhandler(500)\ndef internal_error(error):\n    return render_template('500.html'), 500\nif __name__ == '__main__':\n    app.run(debug=True)",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "internal_error",
+        "kind": 2,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "def internal_error(error):\n    return render_template('500.html'), 500\nif __name__ == '__main__':\n    app.run(debug=True)",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "app",
+        "kind": 5,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "app = Flask(__name__, static_folder='static')\nfrom routes.main import main_bp\napp.register_blueprint(main_bp)\n@app.errorhandler(404)\ndef not_found_error(error):\n    return render_template('404.html'), 404\n@app.errorhandler(500)\ndef internal_error(error):\n    return render_template('500.html'), 500\nif __name__ == '__main__':",
+        "detail": "app",
+        "documentation": {}
+    }
+]

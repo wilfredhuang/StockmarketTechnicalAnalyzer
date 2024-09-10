@@ -1,0 +1,6 @@
+Flask==3.0.3
+yfinance==0.2.43
+python-dotenv== 1.0.1
+setuptools==74.1.2 
+matplotlib==3.9.2
+# We just need these to manually these 5 packages, it's dependent modules will install along with them.
