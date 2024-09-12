@@ -15,3 +15,5 @@ def fetch_stock_data():
     except Exception as e:
         flash(f'Error fetching stock data: {str(e)}', 'danger')
     return redirect(url_for('main.index'))
+
+
