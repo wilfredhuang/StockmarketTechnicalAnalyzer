@@ -15,6 +15,7 @@ def index():
         'secret_key': secret_key,
         'user_name': 'John Doe',
     }
+    print("Hello World")
 
     return render_template('index.html', **render_variables)
 
@@ -27,7 +28,13 @@ def fetch_stock_data():
         flash(f'Error fetching stock data: {str(e)}', 'danger')
     return redirect(url_for('main.index'))
 
+@main_bp.route('/grid')
+def grid_page():
+    # Define render variables
+    render_variables = {
+    }
 
+    return render_template('grid.html', **render_variables)
 
 
 

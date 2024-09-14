@@ -5,15 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Flask Starter App{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/vendor/bootstrap.min.css') }}">
-    <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}"> -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom/styles.css') }}"> <!-- Include external CSS -->
     {% block extra_css %}{% endblock %}
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
     {% include 'partials/_navbar.html' %}
 
-    <div class="container mt-4">
+    <div class="container mt-4 flex-grow-1">
         {% include 'partials/_error.html' %}
-        
         {% block content %}{% endblock %}
     </div>
 
@@ -24,3 +23,7 @@
     {% block extra_js %}{% endblock %}
 </body>
 </html>
+
+
+
+

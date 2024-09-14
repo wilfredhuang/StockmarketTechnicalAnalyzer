@@ -34,6 +34,22 @@
         "documentation": {}
     },
     {
+        "label": "Flask",
+        "importPath": "flask",
+        "description": "flask",
+        "isExtraImport": true,
+        "detail": "flask",
+        "documentation": {}
+    },
+    {
+        "label": "request",
+        "importPath": "flask",
+        "description": "flask",
+        "isExtraImport": true,
+        "detail": "flask",
+        "documentation": {}
+    },
+    {
         "label": "Blueprint",
         "importPath": "flask",
         "description": "flask",
@@ -82,6 +98,39 @@
         "documentation": {}
     },
     {
+        "label": "Fore",
+        "importPath": "colorama",
+        "description": "colorama",
+        "isExtraImport": true,
+        "detail": "colorama",
+        "documentation": {}
+    },
+    {
+        "label": "Style",
+        "importPath": "colorama",
+        "description": "colorama",
+        "isExtraImport": true,
+        "detail": "colorama",
+        "documentation": {}
+    },
+    {
+        "label": "init",
+        "importPath": "colorama",
+        "description": "colorama",
+        "isExtraImport": true,
+        "detail": "colorama",
+        "documentation": {}
+    },
+    {
+        "label": "logging",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "logging",
+        "description": "logging",
+        "detail": "logging",
+        "documentation": {}
+    },
+    {
         "label": "fetch_and_process_stock_data",
         "importPath": "app.helpers.stock_utils",
         "description": "app.helpers.stock_utils",
@@ -116,11 +165,29 @@
         "documentation": {}
     },
     {
+        "label": "logger_middleware",
+        "kind": 2,
+        "importPath": "app.middleware.logger",
+        "description": "app.middleware.logger",
+        "peekOfCode": "def logger_middleware():\n    # Skip logging for static files\n    if request.path.startswith('/static'):\n        return\n    method_colors = {\n        'GET': Fore.GREEN,\n        'POST': Fore.BLUE,\n        'PUT': Fore.YELLOW,\n        'DELETE': Fore.RED\n    }",
+        "detail": "app.middleware.logger",
+        "documentation": {}
+    },
+    {
+        "label": "app",
+        "kind": 5,
+        "importPath": "app.middleware.logger",
+        "description": "app.middleware.logger",
+        "peekOfCode": "app = Flask(__name__)\n# Set up basic logging configuration\nlogging.basicConfig(level=logging.INFO, format='%(message)s')\n# Custom logger function\ndef logger_middleware():\n    # Skip logging for static files\n    if request.path.startswith('/static'):\n        return\n    method_colors = {\n        'GET': Fore.GREEN,",
+        "detail": "app.middleware.logger",
+        "documentation": {}
+    },
+    {
         "label": "index",
         "kind": 2,
         "importPath": "app.routes.main",
         "description": "app.routes.main",
-        "peekOfCode": "def index():\n    # Initialize variable with env value\n    #secret_key = os.getenv('SECRET_KEY', 'default')\n    secret_key = current_app.config.get('SECRET_KEY', 'default123')\n    # Define render variables\n    render_variables = {\n        'secret_key': secret_key,\n        'user_name': 'John Doe',\n    }\n    return render_template('index.html', **render_variables)",
+        "peekOfCode": "def index():\n    # Initialize variable with env value\n    #secret_key = os.getenv('SECRET_KEY', 'default')\n    secret_key = current_app.config.get('SECRET_KEY', 'default123')\n    # Define render variables\n    render_variables = {\n        'secret_key': secret_key,\n        'user_name': 'John Doe',\n    }\n    print(\"Hello World\")",
         "detail": "app.routes.main",
         "documentation": {}
     },
@@ -129,7 +196,16 @@
         "kind": 2,
         "importPath": "app.routes.main",
         "description": "app.routes.main",
-        "peekOfCode": "def fetch_stock_data():\n    try:\n        csv_filename = fetch_and_process_stock_data()\n        flash(f'Stock data successfully fetched and saved as {csv_filename}', 'success')\n    except Exception as e:\n        flash(f'Error fetching stock data: {str(e)}', 'danger')\n    return redirect(url_for('main.index'))",
+        "peekOfCode": "def fetch_stock_data():\n    try:\n        csv_filename = fetch_and_process_stock_data()\n        flash(f'Stock data successfully fetched and saved as {csv_filename}', 'success')\n    except Exception as e:\n        flash(f'Error fetching stock data: {str(e)}', 'danger')\n    return redirect(url_for('main.index'))\n@main_bp.route('/grid')\ndef grid_page():\n    # Define render variables",
+        "detail": "app.routes.main",
+        "documentation": {}
+    },
+    {
+        "label": "grid_page",
+        "kind": 2,
+        "importPath": "app.routes.main",
+        "description": "app.routes.main",
+        "peekOfCode": "def grid_page():\n    # Define render variables\n    render_variables = {\n    }\n    return render_template('grid.html', **render_variables)",
         "detail": "app.routes.main",
         "documentation": {}
     },
@@ -147,7 +223,7 @@
         "kind": 5,
         "importPath": "run",
         "description": "run",
-        "peekOfCode": "app = create_app()\nif __name__ == '__main__':\n    # Get the debug mode variable based on current configuration\n    debug_mode = app.config.get('DEBUG', False)\n    app.run(debug=debug_mode)",
+        "peekOfCode": "app = create_app()\nif __name__ == '__main__':\n    # Get the debug mode variable based on current configuration\n    debug_mode = app.config.get('DEBUG', False,)\n    app.run(debug=debug_mode)",
         "detail": "run",
         "documentation": {}
     }
