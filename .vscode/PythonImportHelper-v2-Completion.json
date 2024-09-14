@@ -74,15 +74,7 @@
         "documentation": {}
     },
     {
-        "label": "Flask",
-        "importPath": "flask",
-        "description": "flask",
-        "isExtraImport": true,
-        "detail": "flask",
-        "documentation": {}
-    },
-    {
-        "label": "render_template",
+        "label": "current_app",
         "importPath": "flask",
         "description": "flask",
         "isExtraImport": true,
@@ -91,10 +83,10 @@
     },
     {
         "label": "fetch_and_process_stock_data",
-        "importPath": "helpers.stock_utils",
-        "description": "helpers.stock_utils",
+        "importPath": "app.helpers.stock_utils",
+        "description": "app.helpers.stock_utils",
         "isExtraImport": true,
-        "detail": "helpers.stock_utils",
+        "detail": "app.helpers.stock_utils",
         "documentation": {}
     },
     {
@@ -107,74 +99,56 @@
         "documentation": {}
     },
     {
-        "label": "main_bp",
-        "importPath": "routes.main",
-        "description": "routes.main",
+        "label": "create_app",
+        "importPath": "app",
+        "description": "app",
         "isExtraImport": true,
-        "detail": "routes.main",
+        "detail": "app",
         "documentation": {}
     },
     {
         "label": "fetch_and_process_stock_data",
         "kind": 2,
-        "importPath": "helpers.stock_utils",
-        "description": "helpers.stock_utils",
+        "importPath": "app.helpers.stock_utils",
+        "description": "app.helpers.stock_utils",
         "peekOfCode": "def fetch_and_process_stock_data():\n    # List of 20 U.S. stocks (you can modify this list)\n    stocks = ['AAPL', 'MSFT', 'AMZN', 'GOOGL', 'FB', 'TSLA', 'BRK-B', 'JPM', 'JNJ', 'V', 'PG', 'UNH', 'MA', 'NVDA', 'HD', 'DIS', 'BAC', 'ADBE', 'CRM', 'NFLX']\n    end_date = datetime.now()  # Current date OR datetime(2024, 1, 1) - 01/01/24\n    start_date = end_date - timedelta(days=3652)  # Approximately 10 years\n    all_data = []\n    for stock in stocks:\n        ticker = yf.Ticker(stock)\n        data = ticker.history(start=start_date, end=end_date)\n        data['Symbol'] = stock",
-        "detail": "helpers.stock_utils",
+        "detail": "app.helpers.stock_utils",
         "documentation": {}
     },
     {
         "label": "index",
         "kind": 2,
-        "importPath": "routes.main",
-        "description": "routes.main",
-        "peekOfCode": "def index():\n    return render_template('index.html')\n@main_bp.route('/fetch-stock-data', methods=['POST'])\ndef fetch_stock_data():\n    try:\n        csv_filename = fetch_and_process_stock_data()\n        flash(f'Stock data successfully fetched and saved as {csv_filename}', 'success')\n    except Exception as e:\n        flash(f'Error fetching stock data: {str(e)}', 'danger')\n    return redirect(url_for('main.index'))",
-        "detail": "routes.main",
+        "importPath": "app.routes.main",
+        "description": "app.routes.main",
+        "peekOfCode": "def index():\n    # Initialize variable with env value\n    #secret_key = os.getenv('SECRET_KEY', 'default')\n    secret_key = current_app.config.get('SECRET_KEY', 'default123')\n    # Define render variables\n    render_variables = {\n        'secret_key': secret_key,\n        'user_name': 'John Doe',\n    }\n    return render_template('index.html', **render_variables)",
+        "detail": "app.routes.main",
         "documentation": {}
     },
     {
         "label": "fetch_stock_data",
         "kind": 2,
-        "importPath": "routes.main",
-        "description": "routes.main",
+        "importPath": "app.routes.main",
+        "description": "app.routes.main",
         "peekOfCode": "def fetch_stock_data():\n    try:\n        csv_filename = fetch_and_process_stock_data()\n        flash(f'Stock data successfully fetched and saved as {csv_filename}', 'success')\n    except Exception as e:\n        flash(f'Error fetching stock data: {str(e)}', 'danger')\n    return redirect(url_for('main.index'))",
-        "detail": "routes.main",
+        "detail": "app.routes.main",
         "documentation": {}
     },
     {
         "label": "main_bp",
         "kind": 5,
-        "importPath": "routes.main",
-        "description": "routes.main",
-        "peekOfCode": "main_bp = Blueprint('main', __name__)\n@main_bp.route('/')\ndef index():\n    return render_template('index.html')\n@main_bp.route('/fetch-stock-data', methods=['POST'])\ndef fetch_stock_data():\n    try:\n        csv_filename = fetch_and_process_stock_data()\n        flash(f'Stock data successfully fetched and saved as {csv_filename}', 'success')\n    except Exception as e:",
-        "detail": "routes.main",
-        "documentation": {}
-    },
-    {
-        "label": "not_found_error",
-        "kind": 2,
-        "importPath": "app",
-        "description": "app",
-        "peekOfCode": "def not_found_error(error):\n    return render_template('404.html'), 404\n@app.errorhandler(500)\ndef internal_error(error):\n    return render_template('500.html'), 500\nif __name__ == '__main__':\n    app.run(debug=True)",
-        "detail": "app",
-        "documentation": {}
-    },
-    {
-        "label": "internal_error",
-        "kind": 2,
-        "importPath": "app",
-        "description": "app",
-        "peekOfCode": "def internal_error(error):\n    return render_template('500.html'), 500\nif __name__ == '__main__':\n    app.run(debug=True)",
-        "detail": "app",
+        "importPath": "app.routes.main",
+        "description": "app.routes.main",
+        "peekOfCode": "main_bp = Blueprint('main', __name__)\n@main_bp.route('/')\ndef index():\n    # Initialize variable with env value\n    #secret_key = os.getenv('SECRET_KEY', 'default')\n    secret_key = current_app.config.get('SECRET_KEY', 'default123')\n    # Define render variables\n    render_variables = {\n        'secret_key': secret_key,\n        'user_name': 'John Doe',",
+        "detail": "app.routes.main",
         "documentation": {}
     },
     {
         "label": "app",
         "kind": 5,
-        "importPath": "app",
-        "description": "app",
-        "peekOfCode": "app = Flask(__name__, static_folder='static')\nfrom routes.main import main_bp\napp.register_blueprint(main_bp)\n@app.errorhandler(404)\ndef not_found_error(error):\n    return render_template('404.html'), 404\n@app.errorhandler(500)\ndef internal_error(error):\n    return render_template('500.html'), 500\nif __name__ == '__main__':",
-        "detail": "app",
+        "importPath": "run",
+        "description": "run",
+        "peekOfCode": "app = create_app()\nif __name__ == '__main__':\n    # Get the debug mode variable based on current configuration\n    debug_mode = app.config.get('DEBUG', False)\n    app.run(debug=debug_mode)",
+        "detail": "run",
         "documentation": {}
     }
 ]
