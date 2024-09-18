@@ -1,2 +1,23 @@
+# Ignore the __pycache__ directories
+__pycache__/
+
+# Ignore all Python bytecode files
+*.pyc
+*.pyo
+*.pyd
+
+
+# Ignore .env files for security reasons
 .env
-flask.env
+
+# Ignore data folder, don't want to overload it with everybody's own data
+app/static/data/ 
+
+# Ignore VS Code settings directory (Disabled for now)
+# .vscode/
+
+# Ignore Jupyter notebook checkpoints
+.ipynb_checkpoints/
+
+# Others
+environment.yml

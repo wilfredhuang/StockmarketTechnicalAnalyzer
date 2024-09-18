@@ -1,0 +1,16 @@
+{% extends "layouts/layout.html" %}
+
+{% block title %}Home - Flask Starter App{% endblock %}
+
+{% block extra_css %}{% endblock %}
+
+
+{% block content %}
+<h1>Welcome to Flask Starter App </h1>
+<p>This is a simple starter template for your Flask application. Hello {{user_name}} , Secret key: {{ secret_key }}</p>
+<form action="{{ url_for('main.fetch_stock_data') }}" method="post">
+    <button type="submit" class="btn btn-primary">Fetch Stock Data</button>
+</form>
+{% endblock %}
+
+{% block extra_js %}{% endblock %}
