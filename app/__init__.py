@@ -13,15 +13,13 @@ def create_app():
     # Create Flask app instance
     app = Flask(__name__, static_folder='static')
 
-    # --- ---
+    # Suppress Werkzeug's (Flask's built in logger) request logs
     # Comment out these lines if you want to use the default logger as it suppresses it
     # Configure werkzeug logging
-    logging.basicConfig(level=logging.ERROR)  # This sets the root logger to show ERROR messages only
-    # # Suppress Werkzeug's (Flask's built in logger) request logs
-    werkzeug_logger = logging.getLogger('werkzeug')
-    werkzeug_logger.setLevel(logging.ERROR)  # Only log ERROR messages for Werkzeug
-    # --- ---
-    
+    # logging.basicConfig(level=logging.ERROR)  # This sets the root logger to show ERROR messages only
+    # werkzeug_logger = logging.getLogger('werkzeug')
+    # werkzeug_logger.setLevel(logging.ERROR)  # Only log ERROR messages for Werkzeug
+
     # Load configuration
     app.config.from_object(get_config())
 
