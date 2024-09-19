@@ -1,11 +1,10 @@
 [
     {
-        "label": "yfinance",
-        "kind": 6,
+        "label": "List",
+        "importPath": "typing",
+        "description": "typing",
         "isExtraImport": true,
-        "importPath": "yfinance",
-        "description": "yfinance",
-        "detail": "yfinance",
+        "detail": "typing",
         "documentation": {}
     },
     {
@@ -15,6 +14,15 @@
         "importPath": "pandas",
         "description": "pandas",
         "detail": "pandas",
+        "documentation": {}
+    },
+    {
+        "label": "yfinance",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "yfinance",
+        "description": "yfinance",
+        "detail": "yfinance",
         "documentation": {}
     },
     {
@@ -156,6 +164,69 @@
         "documentation": {}
     },
     {
+        "label": "load_data",
+        "kind": 2,
+        "importPath": "app.helpers.process_utils",
+        "description": "app.helpers.process_utils",
+        "peekOfCode": "def load_data(tickers: List[str]) -> pd.DataFrame:\n    pass\ndef visualize(ticker, indicators: List[str]):\n    pass\ndef compute_indicators(df: pd.DataFrame, indicators: List[str]) -> pd.DataFrame:\n    pass\ndef rank_stocks(tickers: pd.DataFrame) -> pd.DataFrame:\n    # TO DO: logic to rank the stocks according to some rule using information from the indicators\n    # returns the tickers and their ranking 1 to N\n    # to be shown to user as a suggestion",
+        "detail": "app.helpers.process_utils",
+        "documentation": {}
+    },
+    {
+        "label": "visualize",
+        "kind": 2,
+        "importPath": "app.helpers.process_utils",
+        "description": "app.helpers.process_utils",
+        "peekOfCode": "def visualize(ticker, indicators: List[str]):\n    pass\ndef compute_indicators(df: pd.DataFrame, indicators: List[str]) -> pd.DataFrame:\n    pass\ndef rank_stocks(tickers: pd.DataFrame) -> pd.DataFrame:\n    # TO DO: logic to rank the stocks according to some rule using information from the indicators\n    # returns the tickers and their ranking 1 to N\n    # to be shown to user as a suggestion\n    pass\ndef test_stocks(tickers: List[str]) -> pd.DataFrame:",
+        "detail": "app.helpers.process_utils",
+        "documentation": {}
+    },
+    {
+        "label": "compute_indicators",
+        "kind": 2,
+        "importPath": "app.helpers.process_utils",
+        "description": "app.helpers.process_utils",
+        "peekOfCode": "def compute_indicators(df: pd.DataFrame, indicators: List[str]) -> pd.DataFrame:\n    pass\ndef rank_stocks(tickers: pd.DataFrame) -> pd.DataFrame:\n    # TO DO: logic to rank the stocks according to some rule using information from the indicators\n    # returns the tickers and their ranking 1 to N\n    # to be shown to user as a suggestion\n    pass\ndef test_stocks(tickers: List[str]) -> pd.DataFrame:\n    # using the tickers that the user has chosen\n    # mimic what happened if the user had bought/traded them (testing with the last one year data)",
+        "detail": "app.helpers.process_utils",
+        "documentation": {}
+    },
+    {
+        "label": "rank_stocks",
+        "kind": 2,
+        "importPath": "app.helpers.process_utils",
+        "description": "app.helpers.process_utils",
+        "peekOfCode": "def rank_stocks(tickers: pd.DataFrame) -> pd.DataFrame:\n    # TO DO: logic to rank the stocks according to some rule using information from the indicators\n    # returns the tickers and their ranking 1 to N\n    # to be shown to user as a suggestion\n    pass\ndef test_stocks(tickers: List[str]) -> pd.DataFrame:\n    # using the tickers that the user has chosen\n    # mimic what happened if the user had bought/traded them (testing with the last one year data)\n    # uses the backtest function\n    pass",
+        "detail": "app.helpers.process_utils",
+        "documentation": {}
+    },
+    {
+        "label": "test_stocks",
+        "kind": 2,
+        "importPath": "app.helpers.process_utils",
+        "description": "app.helpers.process_utils",
+        "peekOfCode": "def test_stocks(tickers: List[str]) -> pd.DataFrame:\n    # using the tickers that the user has chosen\n    # mimic what happened if the user had bought/traded them (testing with the last one year data)\n    # uses the backtest function\n    pass\ndef backtest(tickers: pd.DataFrame):\n    pass\n# to be confirmed\ndef predict(df: pd.DataFrame):\n    pass",
+        "detail": "app.helpers.process_utils",
+        "documentation": {}
+    },
+    {
+        "label": "backtest",
+        "kind": 2,
+        "importPath": "app.helpers.process_utils",
+        "description": "app.helpers.process_utils",
+        "peekOfCode": "def backtest(tickers: pd.DataFrame):\n    pass\n# to be confirmed\ndef predict(df: pd.DataFrame):\n    pass",
+        "detail": "app.helpers.process_utils",
+        "documentation": {}
+    },
+    {
+        "label": "predict",
+        "kind": 2,
+        "importPath": "app.helpers.process_utils",
+        "description": "app.helpers.process_utils",
+        "peekOfCode": "def predict(df: pd.DataFrame):\n    pass",
+        "detail": "app.helpers.process_utils",
+        "documentation": {}
+    },
+    {
         "label": "fetch_and_process_stock_data",
         "kind": 2,
         "importPath": "app.helpers.stock_utils",
@@ -187,7 +258,7 @@
         "kind": 2,
         "importPath": "app.routes.main",
         "description": "app.routes.main",
-        "peekOfCode": "def index():\n    # Initialize variable with env value\n    #secret_key = os.getenv('SECRET_KEY', 'default')\n    secret_key = current_app.config.get('SECRET_KEY', 'default123')\n    # Define render variables\n    render_variables = {\n        'secret_key': secret_key,\n        'user_name': 'John Doe',\n    }\n    print(\"Hello World\")",
+        "peekOfCode": "def index():\n    # Initialize variable with env value [the direct way from .env file]\n    # secret_key = os.getenv('SECRET_KEY', 'default')\n    # Initialize variable with env value [get a variable value from the current config set]\n    secret_key = current_app.config.get('SECRET_KEY', 'default123')\n    # Define render variables\n    render_variables = {\n        'secret_key': secret_key,\n        'user_name': 'John Doe',\n    }",
         "detail": "app.routes.main",
         "documentation": {}
     },
@@ -214,7 +285,7 @@
         "kind": 5,
         "importPath": "app.routes.main",
         "description": "app.routes.main",
-        "peekOfCode": "main_bp = Blueprint('main', __name__)\n@main_bp.route('/')\ndef index():\n    # Initialize variable with env value\n    #secret_key = os.getenv('SECRET_KEY', 'default')\n    secret_key = current_app.config.get('SECRET_KEY', 'default123')\n    # Define render variables\n    render_variables = {\n        'secret_key': secret_key,\n        'user_name': 'John Doe',",
+        "peekOfCode": "main_bp = Blueprint('main', __name__)\n@main_bp.route('/')\ndef index():\n    # Initialize variable with env value [the direct way from .env file]\n    # secret_key = os.getenv('SECRET_KEY', 'default')\n    # Initialize variable with env value [get a variable value from the current config set]\n    secret_key = current_app.config.get('SECRET_KEY', 'default123')\n    # Define render variables\n    render_variables = {\n        'secret_key': secret_key,",
         "detail": "app.routes.main",
         "documentation": {}
     },
@@ -223,7 +294,7 @@
         "kind": 5,
         "importPath": "run",
         "description": "run",
-        "peekOfCode": "app = create_app()\nif __name__ == '__main__':\n    # Get the debug mode variable based on current configuration\n    debug_mode = app.config.get('DEBUG', False,)\n    app.run(debug=debug_mode)",
+        "peekOfCode": "app = create_app()\nif __name__ == '__main__':\n    # Get the debug mode variable based on current configuration\n    debug_mode = app.config.get('DEBUG', False)\n    app.run(debug=debug_mode)",
         "detail": "run",
         "documentation": {}
     }

@@ -14,7 +14,7 @@ __pycache__/
 app/static/data/ 
 
 # Ignore VS Code settings directory (Disabled for now)
-# .vscode/
+.vscode
 
 # Ignore Jupyter notebook checkpoints
 .ipynb_checkpoints/
