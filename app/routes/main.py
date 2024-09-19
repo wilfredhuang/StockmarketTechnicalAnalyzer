@@ -6,8 +6,9 @@ main_bp = Blueprint('main', __name__)
 
 @main_bp.route('/')
 def index():
-    # Initialize variable with env value
-    #secret_key = os.getenv('SECRET_KEY', 'default')
+    # Initialize variable with env value [the direct way from .env file]
+    # secret_key = os.getenv('SECRET_KEY', 'default')
+    # Initialize variable with env value [get a variable value from the current config set]
     secret_key = current_app.config.get('SECRET_KEY', 'default123')
     
     # Define render variables
