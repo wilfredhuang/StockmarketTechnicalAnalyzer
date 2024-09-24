@@ -12,8 +12,15 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url_for('main.grid_page') }}">Grid</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Contact</a>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Visualization
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="{{ url_for('example.first_example_page') }}"> First Example </a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('example.plotly_test_page') }}">Plotly with (Claude)</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('example.dash_test_page') }}">Dash with (GPT)</a></li>
+                    </ul>
                 </li>
             </ul>
         </div>

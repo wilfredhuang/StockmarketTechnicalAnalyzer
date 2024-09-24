@@ -2,6 +2,8 @@ import yfinance as yf
 import pandas as pd
 from datetime import datetime, timedelta
 
+# Very basic version, just fetches data
+
 def fetch_and_process_stock_data():
     # List of 20 U.S. stocks (you can modify this list)
     stocks = ['AAPL', 'MSFT', 'AMZN', 'GOOGL', 'FB', 'TSLA', 'BRK-B', 'JPM', 'JNJ', 'V', 'PG', 'UNH', 'MA', 'NVDA', 'HD', 'DIS', 'BAC', 'ADBE', 'CRM', 'NFLX']
@@ -28,3 +30,5 @@ def fetch_and_process_stock_data():
     combined_data.to_csv(f"static/data/{csv_filename}", index=False)
     
     return csv_filename
+
+

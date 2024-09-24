@@ -1,0 +1,99 @@
+{% extends "layouts/layout.html" %}
+
+{% block title %}Home - Flask Starter App{% endblock %}
+
+{% block extra_css %}{% endblock %}
+
+
+{% block content %}
+<div class="container mt-4"></div>
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <p> Fetch Data </p>
+        </div>
+        <div class="col-md-6">
+            <button id="fetch-data-btn" class="btn btn-success w-100">Fetch Data</button>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <p> Read/Upload Data </p>
+        </div>
+        <div class="col-md-6">
+            <button class="btn btn-success w-100">Read Data</button>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <p> Read/Upload Data </p>
+        </div>
+        <div class="col-md-6">
+            <button class="btn btn-success w-100">Read Data</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <button class="btn btn-primary w-100">Button 1</button>
+        </div>
+        <div class="col-md-4">
+            <button class="btn btn-secondary w-100">Button 2</button>
+        </div>
+        <div class="col-md-4">
+            <button class="btn btn-success w-100">Button 3</button>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script> 
+    document.addEventListener('DOMContentLoaded', function() {
+        function sendRequest(url, method, data) {
+            return fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            });
+        }
+    
+
+        document.getElementById('fetch-data-btn').addEventListener('click', function() {
+            sendRequest('/sample-post', 'POST', {
+            })
+            .then(data => {
+                alert(data.message);
+            });
+
+            
+        });
+        
+    
+        document.getElementById('process-data').addEventListener('click', function() {
+            sendRequest('/process_data', 'POST')
+            .then(data => {
+                alert(data.message);
+            });
+        });
+    
+        document.getElementById('generate-chart').addEventListener('click', function() {
+            const ticker = document.getElementById('ticker-input').value;
+            if (!ticker) {
+                alert('Please enter a ticker symbol');
+                return;
+            }
+            sendRequest('/get_chart', 'POST', { ticker: ticker })
+            .then(data => {
+                Plotly.newPlot('chart-container', data.data, data.layout);
+            });
+        });
+    });
+</script>
+{% endblock %}

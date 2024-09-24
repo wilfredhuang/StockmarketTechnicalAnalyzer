@@ -1,18 +1,20 @@
 from flask import Flask, render_template
 from dotenv import load_dotenv
-import os
 from .config import get_config
-from .routes import main_bp
-import logging
+from .routes import main_bp, stock_bp, example_bp
 from .middleware.logger import logger_middleware
+import os, logging
+
+# Import dash app
+from .helpers.dash_helpers import create_dash_app, create_dash_app_2  
 
 def create_app():
     # Load environment variables
     load_dotenv()
-
     # Create Flask app instance
     app = Flask(__name__, static_folder='static')
 
+    # Logger Stuff, can ignore
     # Suppress Werkzeug's (Flask's built in logger) request logs
     # Comment out these lines if you want to use the default logger as it suppresses it
     # Configure werkzeug logging
@@ -25,7 +27,8 @@ def create_app():
 
     # Register blueprints
     app.register_blueprint(main_bp)
-
+    app.register_blueprint(stock_bp)
+    app.register_blueprint(example_bp)
 
     # Error handlers
     @app.errorhandler(404)
@@ -42,7 +45,15 @@ def create_app():
         # Custom logger middleware
         logger_middleware()
 
+    # Initialize Dash and pass in the Flask server instance (Experimental Feature)
+    # Access their web endpoint at /dash/
+    dash_app = create_dash_app(app)
+    dash_app2 = create_dash_app_2(app)
+
+    
     return app
+
+
 
 
 
