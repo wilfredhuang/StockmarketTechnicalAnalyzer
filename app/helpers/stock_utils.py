@@ -25,6 +25,6 @@ def fetch_and_process_stock_data():
     
     # Save to CSV
     csv_filename = f"stock_data_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
-    combined_data.to_csv(f"static/data/{csv_filename}", index=False)
-    
+    combined_data.to_csv(f"app/static/data/{csv_filename}", index=False)
     return csv_filename
+    
