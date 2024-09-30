@@ -1,0 +1,30 @@
+{% extends "layouts/layout.html" %}
+
+{% block title %}Home - Flask Starter App{% endblock %}
+
+{% block extra_css %}{% endblock %}
+
+
+{% block content %}
+<h1>Prediction Chart</h1>
+<p>This is a simple starter template for your Flask application. Hello {{user_name}} , Secret key: {{ secret_key }}</p>
+<!--Where the graph will be-->
+<div id='prediction_graph'>
+
+    
+</div>
+
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script type="text/javascript">
+
+    // Receives teh Json and charts it out with Plotly.newPlot
+    var prediction_graph_json = {{prediction_graph | safe}};
+
+    // First param is id of the div and second is the json data
+    Plotly.newPlot("prediction_graph", prediction_graph_json, {});
+
+</script>
+
+{% endblock %}
+
+{% block extra_js %}{% endblock %}

@@ -3,6 +3,6 @@ yfinance==0.2.43
 python-dotenv== 1.0.1
 setuptools==74.1.2 
 matplotlib==3.9.2
-#plotly==5.22.0
-#pandas_ta==0.3.14b0
+plotly==5.22.0
+pandas_ta==0.3.14b0
 scikit-learn==1.5.2

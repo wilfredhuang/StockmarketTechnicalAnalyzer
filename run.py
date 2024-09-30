@@ -9,3 +9,4 @@ if __name__ == '__main__':
     debug_mode = app.config.get('DEBUG', False)
     app.run(debug=debug_mode)
 
+

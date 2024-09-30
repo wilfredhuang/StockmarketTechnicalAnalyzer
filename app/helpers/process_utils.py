@@ -3,8 +3,8 @@ import pandas as pd
 from sklearn.linear_model import LinearRegression 
 from sklearn.preprocessing import MinMaxScaler
 from datetime import datetime
+import matplotlib.pyplot as plt
 
-# import matplotlib.pyplot as plt
 
 def load_data(tickers: List[str]) -> pd.DataFrame:
     pass
@@ -33,22 +33,27 @@ def backtest(tickers: pd.DataFrame):
 def train_linear_model(csvFile):
     df = pd.read_csv(f"app/static/data/{csvFile}")
     df['Date'] = pd.to_datetime(df['Date'], format='%Y-%m-%d')
-    
-    stockList = df['Symbol'].unique() #Split dataset by company
-    frames = []
-    for stock in stockList:
-        x = df.loc[df['Symbol'] == stock] 
-        x['Close'] = df.Close.shift(-10) #Shift close price (so the row for 1 Jan 2024 will contain the closing price for 11 Jan 2024)
-        x.drop(x.tail(10).index,inplace=True) # drop last 10 rows
-        frames.append(x)
-    prepDf = pd.concat(frames)
 
-    trainSet = prepDf.loc[(prepDf['Date'] >= '2010-01-01') & (prepDf['Date'] < '2023-01-01')]
-    xTrain = trainSet[['Open','High','Low','Volume']]
-    yTrain = trainSet['Close']
+    #Split dataset by company
+    stock_list = df['Symbol'].unique() 
+    frames = []
+    for stock in stock_list:
+        x = df.loc[df['Symbol'] == stock] 
+        
+        #Shift close price (so the row for 1 Jan 2024 will contain the closing price for 11 Jan 2024)
+        x['Close'] = df.Close.shift(-10) 
+        # drop last 10 rows 
+        x.drop(x.tail(10).index,inplace=True) 
+        frames.append(x)
+    pref_df = pd.concat(frames)
+
+
+    train_set = pref_df.loc[(pref_df['Date'] >= '2010-01-01') & (pref_df['Date'] < '2023-01-01')]
+    x_train = train_set[['Open','High','Low','Volume']]
+    y_train = train_set['Close']
     lr = LinearRegression()
-    linearModel = lr.fit(xTrain, yTrain)
-    return linearModel
+    linear_model = lr.fit(x_train, y_train)
+    return linear_model
 
 # Take in company of choice, date (starting 10 days earlier) csvFile to read and the trained model
 # predict_linear_model("AAPL", '2024-09-11', "stock_data_20240925_121820.csv", model)
@@ -57,27 +62,44 @@ def predict_linear_model(company, date, csvFile, model):
     df = pd.read_csv(f"app/static/data/{csvFile}")
     df['Date'] = pd.to_datetime(df['Date'], format='%Y-%m-%d')
 
-    predictSet = df.loc[df['Symbol'] == company]
-    predictSet = predictSet.loc[predictSet['Date'] >= date]
-    xPredict = predictSet[['Open','High','Low','Volume']]
+    predict_set = df.loc[df['Symbol'] == company]
 
-    yScore = model.predict(xPredict)
+    # Filter for historical data up to the previous day
+    historical_set = predict_set[-20:]
+    historical_set = historical_set[['Date','Close']]
 
-    beginDate = datetime.now()
-    resultDf = pd.DataFrame({'Date':pd.date_range(beginDate, periods=10), 'Results':yScore}) # <- This is wrong since it dosent take into account weekends
-    
-    return(resultDf)
+    predict_set = predict_set[-10:]
+    x_predict = predict_set[['Open','High','Low','Volume']]
+
+    y_score = model.predict(x_predict)
+    begin_date = datetime.today()
+
+    # Add in date to the dataframe for visualising
+    resultDf = pd.DataFrame({'Date':pd.bdate_range(begin_date, periods=10), 'Results':y_score}) 
+    return(resultDf, historical_set)
 
 def test_linear_model(company, date, csvFile, model):
     df = pd.read_csv(f"app/static/data/{csvFile}")
-
-    testSet = df.loc[df['Symbol'] == company]
-    testSet['Date'] = pd.to_datetime(testSet['Date'], format='%Y-%m-%d') 
-    testSet['Close'] = testSet.Close.shift(-10) 
-    testSet.drop(testSet.tail(10).index,inplace=True)    
-    testSet = testSet.loc[testSet['Date'] >= date]
-
-    xTest = testSet[['Open','High','Low','Volume']]
-    yTest = testSet['Close']
-    print(f'{model.score(xTest,yTest)}\n-----------------')
+    test_set = df.loc[df['Symbol'] == company]
+    test_set['Date'] = pd.to_datetime(test_set['Date'], format='%Y-%m-%d') 
+    test_set['FutureClose'] = test_set.Close.shift(-10) 
+    test_set.drop(test_set.tail(10).index,inplace=True)    
+    test_set = test_set.loc[test_set['Date'] >= date]
+    x_test = test_set[['Open','High','Low','Volume']]
+    y_test = test_set['FutureClose']
+    y_score = model.score(x_test,y_test)
+    yPredict = model.predict(x_test)
+    plt.figure(figsize=(20,6))
+    plt.plot(test_set['Date'],y_test) 
+    plt.plot(test_set['Date'],yPredict)
+    plt.plot(test_set['Date'],test_set['Close'])
+    plt.legend(['Future Price','Predicted Price','Actual Price'])
+    plt.title('Predicted Closing Price of Apple 10 days ahead')
+    plt.xlabel('Date')
+    plt.ylabel('Price')
+    plt.show()
     pass
+
+model = train_linear_model('stock_data_20240925_124231.csv')
+predictions = predict_linear_model('AAPL','2023-08-02','stock_data_20240925_124231.csv', model)
+

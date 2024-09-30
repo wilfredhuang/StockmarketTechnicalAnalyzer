@@ -24,7 +24,7 @@ def fetch_and_process_stock_data():
     combined_data['Date'] = pd.to_datetime(combined_data['Date']).dt.strftime('%Y-%m-%d')
     
     # Save to CSV
-    csv_filename = f"stock_data_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+    csv_filename = f"stock_data_{datetime.now().strftime('%Y-%m-%d')}.csv"
     combined_data.to_csv(f"app/static/data/{csv_filename}", index=False)
     return csv_filename
     
