@@ -1,0 +1,27 @@
+{% extends "layouts/layout.html" %}
+{% if request.method == 'POST' %}
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+{% endif %}
+{% block content %}
+<div class="column is-4 is-offset-4">
+    <h3 class="title">Login</h3>
+    <div class="box">
+        <form action="{{ url_for('main.login_post') }}" method="POST">
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <label>
+                <input type="checkbox" name="remember"> Remember me
+            </label>
+            <button type="submit">Log In</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

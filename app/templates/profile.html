@@ -1,0 +1,121 @@
+{% extends "layouts/layout.html" %}
+{% block content %}
+<head>
+    <style>
+        #tickerContainer {
+            display: none; /* Hide the ticker container initially */
+            margin-top: 20px;
+        }
+        #sellContainer {
+            display: none; /* Hide the ticker container initially */
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<h1 class="title">
+    <h1>Welcome, {{ current_user.name }}!</h1>
+</h1>
+<body>
+    <div class="container mt-5">
+        <h2>Your Actions</h2>
+        <div class="container">
+            <button id="addTickerButton" class="btn btn-secondary">Add New Stock/Update shares</button>
+            <button id="soldSharesButton" class="btn btn-secondary">Sell</button>
+    
+            <div id="tickerContainer">
+                <!-- Form for inputting stock tickers -->
+                <form action="{{ url_for('main.add_ticker') }}" method="post">
+                    <div class="form-group">
+                        <label for="ticker">Select Existing Stock Ticker or Enter New:</label>
+                        <div class="input-group">
+                            <button type="button" id="toggleButton" class="btn btn-secondary" onclick="toggleInput()">Select Existing Stock</button>
+                            <select id="existing-ticker" name="ticker" class="form-control" required style="display: none;">
+                                <option value="" disabled selected>Select a stock</option>
+                                {% for stock in tickers %}
+                                    <option value="{{ stock.ticker }}">{{ stock.ticker }}</option>
+                                {% endfor %}
+                            </select>
+                            <input type="text" id="new-ticker" name="new_ticker" class="form-control" placeholder="Enter new ticker" style="display: block;" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="shares">Amount of Shares:</label>
+                        <input type="number" id="shares" name="shares" class="form-control" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="price">Price Per Share:</label>
+                        <input type="number" step="0.01" id="price" name="price" class="form-control" min="0" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Ticker</button>
+                </form>
+            </div>
+            <div id="sellContainer">
+                <!-- Form for selling stock tickers -->
+                <form action="{{ url_for('main.sell_shares') }}" method="post">
+                    <label for="ticker">Select Existing Stock Ticker to sell:</label>
+                    <select id="existing-ticker" name="ticker" class="form-control" required>
+                        <option value="" disabled selected>Select a stock</option>
+                        {% for stock in tickers %}
+                            <option value="{{ stock.ticker }}">{{ stock.ticker }}</option>
+                        {% endfor %}
+                    </select>
+                    <div class="form-group">
+                        <label for="shares">Amount of Shares to sell:</label>
+                        <input type="number" id="shares" name="shares" class="form-control" min="1" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Sell Ticker</button>
+                </form>
+            </div>
+        </div>
+        <div id="chartContainer">
+            <h3>Portifolio Overview</h3>
+            <div id="chartData" 
+                data-ticker='{{ chart_data_ticker | tojson }}' 
+                data-shares='{{ chart_data_shares | tojson }}'>
+            </div>
+            <canvas id="myChart"></canvas>
+        </div>
+        <h2>Your Stocks</h2>
+        {% if tickers %}
+        <table id="tickerTable" class="table">
+            <thead>
+                <tr>
+                    <th>Stock Ticker</th>
+                    <th>Price</th>
+                    <th>Shares</th>
+                    <th>Total Price</th>
+                    <th>P/L</th>
+                    <th>Current Closing Prices</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ticker in tickers %}
+                <tr data-ticker-id="{{ ticker.id }}">
+                    <td class="editable" data-field="symbol">{{ ticker.ticker }}</td>
+                    <td class="editable" data-field="price">${{ ticker.price }}</td>
+                    <td class="editable" data-field="shares">{{ ticker.shares }}</td>
+                    <td class="editable" data-field="totalprice">${{ ticker.price*ticker.shares }}</td>
+                    <td class="editable {{ 'profit' if ticker.profit_loss >= 0 else 'loss' }}" data-field="pandl">
+                    {{ ticker.profit_loss }}
+                    </td>
+                    <td class="editable" data-field="currentclosingprice">${{ ticker.current_price }}</td>
+                    <td>
+                        <form action="{{ url_for('main.delete_ticker', ticker_id=ticker.id) }}" method="POST" style="display:inline;">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No tickers found. Add some to see them here.</p>
+        {% endif %}
+
+    </div>
+    <script src="{{ url_for('static', filename='js/libraries/Editabletable.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</body>
+
+{% endblock %}
