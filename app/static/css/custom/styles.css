@@ -17,3 +17,25 @@ html, body {
 .footer-content {
     background-color: rgba(0, 0, 0, 0.2);
 }
+
+.profit {
+    color: #32CD32; /* LimeGreen */
+}
+
+.loss {
+    color: red;
+}
+.logout-button {
+    margin-top: 8px; /* Adjust the value as needed */
+    margin-left: 3px;
+}
+#chartContainer {
+    width: 250px; /* Set a width for the container */
+    height: 250px; /* Set a height for the container */
+    margin: 20px;  /* Add some margin for spacing */
+}
+
+#myChart {
+    width: 90%;  /* Set the canvas to take the full width of the container */
+    height: 90%; /* Set the canvas to take the full height of the container */
+}
