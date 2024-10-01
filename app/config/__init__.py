@@ -5,6 +5,9 @@ class Config:
     SECRET_KEY = os.getenv('SECRET_KEY', 'default_secret_key')
     DEBUG = False
     TESTING = False
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///site.db'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False  # Disable track modifications to save resources.
+    PERMANENT_SESSION_LIFETIME = timedelta(minutes=15)
 
 class DevelopmentConfig(Config):
     """Configuration for development."""
