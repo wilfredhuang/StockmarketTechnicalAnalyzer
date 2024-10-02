@@ -1,5 +1,4 @@
-from flask import Blueprint, render_template, flash, redirect, url_for, jsonify, request, current_app
-import os
+from flask import Blueprint, render_template, current_app
 
 main_bp = Blueprint('main', __name__)
 

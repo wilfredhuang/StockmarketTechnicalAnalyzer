@@ -1,12 +1,10 @@
 from flask import Flask, render_template
 from dotenv import load_dotenv
 from .config import get_config
-from .routes import main_bp, stock_bp, example_bp
+from .routes import main_bp, stock_bp
 from .middleware.logger import logger_middleware
 import os, logging
 
-# Import dash app
-from .helpers.dash_helpers import create_dash_app, create_dash_app_2  
 
 def create_app():
     # Load environment variables
@@ -28,7 +26,6 @@ def create_app():
     # Register blueprints
     app.register_blueprint(main_bp)
     app.register_blueprint(stock_bp)
-    app.register_blueprint(example_bp)
 
     # Error handlers
     @app.errorhandler(404)
@@ -44,12 +41,6 @@ def create_app():
         pass
         # Custom logger middleware
         logger_middleware()
-
-    # Initialize Dash and pass in the Flask server instance (Experimental Feature)
-    # Access their web endpoint at /dash/
-    dash_app = create_dash_app(app)
-    dash_app2 = create_dash_app_2(app)
-
     
     return app
 

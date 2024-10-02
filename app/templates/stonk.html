@@ -2,7 +2,9 @@
 
 {% block title %}Home - Flask Starter App{% endblock %}
 
-{% block extra_css %}{% endblock %}
+{% block extra_css %}
+
+{% endblock %}
 
 
 {% block content %}
@@ -66,17 +68,51 @@
     
 
         document.getElementById('fetch-data-btn').addEventListener('click', function() {
-            sendRequest('/sample-post', 'POST', {
+            const fetchDataBtn = document.getElementById('fetch-data-btn');
+            
+            // Disable the button and show loading state
+            fetchDataBtn.disabled = true;
+            fetchDataBtn.classList.add('loading-btn');
+            
+            // Change button text to 'Loading...' and add a spinner
+            fetchDataBtn.innerHTML = `
+                <div class="spinner"></div>
+                Loading...
+            `;
+            
+            sendRequest('/fetch-stock-data', 'POST', {})
+            .then(data => {
+                alert(data.message);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            })
+            .finally(() => {
+                // Re-enable the button and revert its text and styles
+                fetchDataBtn.disabled = false;
+                fetchDataBtn.classList.remove('loading-btn');
+                fetchDataBtn.innerHTML = 'Fetch Data';
+            });
+        
+            console.log("Clicked");
+        });
+
+        
+        /*
+        document.getElementById('fetch-data-btn').addEventListener('click', function() {
+            sendRequest('/fetch-stock-data', 'POST', {
             })
             .then(data => {
                 alert(data.message);
             });
+            console.log("Clicked")
 
             
         });
+        */
         
     
-        document.getElementById('process-data').addEventListener('click', function() {
+        /* document.getElementById('process-data').addEventListener('click', function() {
             sendRequest('/process_data', 'POST')
             .then(data => {
                 alert(data.message);
@@ -94,6 +130,7 @@
                 Plotly.newPlot('chart-container', data.data, data.layout);
             });
         });
+        */
     });
 </script>
 {% endblock %}
