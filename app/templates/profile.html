@@ -29,7 +29,7 @@
                         <label for="ticker">Select Existing Stock Ticker or Enter New:</label>
                         <div class="input-group">
                             <button type="button" id="toggleButton" class="btn btn-secondary" onclick="toggleInput()">Select Existing Stock</button>
-                            <select id="existing-ticker" name="ticker" class="form-control" required style="display: none;">
+                            <select id="existing-ticker" name="ticker" class="form-control" style="display: none;">
                                 <option value="" disabled selected>Select a stock</option>
                                 {% for stock in tickers %}
                                     <option value="{{ stock.ticker }}">{{ stock.ticker }}</option>
@@ -96,9 +96,15 @@
                     <td class="editable" data-field="price">${{ ticker.price }}</td>
                     <td class="editable" data-field="shares">{{ ticker.shares }}</td>
                     <td class="editable" data-field="totalprice">${{ ticker.price*ticker.shares }}</td>
+                {% if ticker.profit_loss is not none %}
                     <td class="editable {{ 'profit' if ticker.profit_loss >= 0 else 'loss' }}" data-field="pandl">
                     {{ ticker.profit_loss }}
                     </td>
+                {% else %}
+                    <td class="editable" data-field="pandl">
+                    Stock does not exist
+                    </td>
+                {% endif %}
                     <td class="editable" data-field="currentclosingprice">${{ ticker.current_price }}</td>
                     <td>
                         <form action="{{ url_for('main.delete_ticker', ticker_id=ticker.id) }}" method="POST" style="display:inline;">
