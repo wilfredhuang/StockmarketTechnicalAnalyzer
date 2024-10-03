@@ -1,11 +1,4 @@
-from flask import Blueprint, render_template, flash, redirect, url_for, current_app, request
-from app.helpers.stock_utils import fetch_and_process_stock_data
-import app.helpers.process_utils as pu
-import app.helpers.graph_for_analysis as ga
-import os
-from datetime import datetime
-
-global linear_model
+from flask import Blueprint, render_template, current_app, request, redirect, flash, url_for
 
 main_bp = Blueprint('main', __name__)
 @main_bp.route('/')
@@ -23,15 +16,15 @@ def index():
 
     return render_template('index.html', **render_variables)
 
-@main_bp.route('/fetch-stock-data', methods=['POST'])
-def fetch_stock_data():
-    try:
-        csv_filename = fetch_and_process_stock_data()
-        flash(f'Stock data successfully fetched and saved as {csv_filename}', 'success')
-        present_csv_filename = csv_filename
-    except Exception as e:
-        flash(f'Error fetching stock data: {str(e)}', 'danger')
-    return redirect(url_for('main.index'))
+# @main_bp.route('/fetch-stock-data', methods=['POST'])
+# def fetch_stock_data():
+#     try:
+#         csv_filename = fetch_and_process_stock_data()
+#         flash(f'Stock data successfully fetched and saved as {csv_filename}', 'success')
+#         present_csv_filename = csv_filename
+#     except Exception as e:
+#         flash(f'Error fetching stock data: {str(e)}', 'danger')
+#     return redirect(url_for('main.index'))
 
 @main_bp.route('/grid')
 def grid_page():
@@ -40,22 +33,22 @@ def grid_page():
     }
     return render_template('grid.html', **render_variables)
 
-# Retrieve historical data for analysis
-@main_bp.route('/get-analysis', methods=['POST'])
-def get_analysis():
-    try:
-        company = request.form['company']
-        csv_file = request.form['dataset']
-        # company = 'AAPL'
-        # csv_file = 'stock_data_20240925_124231.csv'
-        analysis_graph = ga.visualise_analysis(csv_file, company)
-        render_variables = {
-            'analysis_graph': analysis_graph,
-        }
-        return render_template('analysis.html', **render_variables)
-    except Exception as e:
-        flash(f'Error fetching stock data: {str(e)}', 'danger')
-    return render_template('analysis.html', **render_variables)
+# # Retrieve historical data for analysis
+# @main_bp.route('/get-analysis', methods=['POST'])
+# def get_analysis():
+#     try:
+#         company = request.form['company']
+#         csv_file = request.form['dataset']
+#         # company = 'AAPL'
+#         # csv_file = 'stock_data_20240925_124231.csv'
+#         analysis_graph = ga.visualise_analysis(csv_file, company)
+#         render_variables = {
+#             'analysis_graph': analysis_graph,
+#         }
+#         return render_template('analysis.html', **render_variables)
+#     except Exception as e:
+#         flash(f'Error fetching stock data: {str(e)}', 'danger')
+#     return render_template('analysis.html', **render_variables)
 
 
 # @main_bp.route('/train-model', methods=['GET'])
@@ -67,25 +60,30 @@ def get_analysis():
 #         flash(f'Error training model: {str(e)}', 'danger')
 #     return redirect(url_for('main.index'))
     
-# Predict data using linear model for now trains the model everytime
-@main_bp.route('/prediction', methods=['POST'])
-def predict_linear():
-    try:
-        company = request.form['company']
-        csv_file = f"stock_data_{datetime.now().strftime('%Y-%m-%d')}.csv"
-        linear_model = pu.train_linear_model(csv_file)
-        date = ''
-        prediction_data, historical_data = pu.predict_linear_model(company, date, csv_file, linear_model)
-        prediction_graph = ga.visualise_prediction(prediction_data, historical_data)
+# # Predict data using linear model for now trains the model everytime
+# @main_bp.route('/prediction', methods=['POST'])
+# def predict_linear():
+#     try:
+#         company = request.form['company']
+#         csv_file = f"stock_data_{datetime.now().strftime('%Y-%m-%d')}.csv"
+#         linear_model = pu.train_linear_model(csv_file)
+#         date = ''
+#         prediction_data, historical_data = pu.predict_linear_model(company, date, csv_file, linear_model)
+#         prediction_graph = ga.visualise_prediction(prediction_data, historical_data)
 
-        render_variables = {
-            'prediction_graph': prediction_graph,
-        }
+#         render_variables = {
+#             'prediction_graph': prediction_graph,
+#         }
 
-        return render_template('prediction.html', **render_variables)
-    except Exception as e:
-        flash(f'Error with prediction: {str(e)}', 'danger')
-    return redirect(url_for('main.index'))
+#         return render_template('prediction.html', **render_variables)
+#     except Exception as e:
+#         flash(f'Error with prediction: {str(e)}', 'danger')
+#     return redirect(url_for('main.index'))
+
+
+
+
+
 
 
 

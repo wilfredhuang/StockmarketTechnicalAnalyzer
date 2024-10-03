@@ -1,0 +1,40 @@
+{% extends "layouts/layout.html" %}
+
+{% block title %}Home - Flask Starter App{% endblock %}
+
+{% block extra_css %}{% endblock %}
+
+
+{% block content %}
+<<<<<<< HEAD
+<h1> Nothing here for now </h1>
+=======
+<h1>Welcome to Flask Starter App </h1>
+<p>This is a simple starter template for your Flask application. Hello {{user_name}} , Secret key: {{ secret_key }}</p>
+<form action="{{ url_for('main.fetch_stock_data') }}" method="post">
+    <button type="submit" class="btn btn-primary">Fetch Stock Data</button>
+</form>
+<form action="{{ url_for('main.get_analysis') }}" method="post">
+    <select id="company" name="company">
+        <option value="AAPL">Apple</option>
+        <option value="GOOGL">Google</option>
+        <option value="AMZN">Amazon</option>
+        <option value="MSFT">Microsoft</option>
+      </select>
+      <input type="text" id="dataset" name="dataset" value="stock_data_20240925_124231.csv"><br>
+      <input type="submit" value="Get Analysis" class="btn btn-primary">
+</form>
+<form action="{{ url_for('main.predict_linear') }}" method="post">
+    <select id="company" name="company">
+        <option value="AAPL">Apple</option>
+        <option value="GOOGL">Google</option>
+        <option value="AMZN">Amazon</option>
+        <option value="MSFT">Microsoft</option>
+      </select>
+      <input type="submit" value="Get Prediction" class="btn btn-primary">
+</form>
+
+>>>>>>> development
+{% endblock %}
+
+{% block extra_js %}{% endblock %}
