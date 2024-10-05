@@ -2,6 +2,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 import seaborn as sns
 import yfinance as yf
 import pandas_ta as ta
@@ -152,8 +153,9 @@ def ema_crossover_strategy():
     df_indicators = process_data()
     data = df_indicators.xs(level='ticker', key=TICKER)
 
+    DEFAULT_COLUMNS = ['open', 'high', 'low', 'close']
     # required indicators
-    strategy = data[['log_return','ema_21', 'ema_50']].dropna().copy()
+    strategy = data[DEFAULT_COLUMNS + ['rsi_14', 'log_return','ema_21', 'ema_50']].dropna().copy()
     # strategy signal
     strategy['signal'] = (strategy ['ema_21'] > strategy['ema_50']).astype(np.int32)
     strategy['2d_log_return'] = strategy['log_return'].rolling(2).sum()
@@ -173,13 +175,14 @@ def ema_crossover_strategy():
     end_date = '2022-12-31'
     benchmark_performance_stat = utils.benchmark_performance(data, start_date, end_date)
     strategy_performance_stat = utils.strategy_peformance(strategy.loc[start_date:end_date])
+    
     # visualize the performance of the strategy
     plt.switch_backend('Agg')  # Use non-interactive backend
-    ax = (strategy.returns + 1).cumprod().plot(kind='line', grid=True, title='Strategy Performance', ylabel="Cumulative Return", xlabel="Time", figsize=(12, 7))
-
-    ax.set_xticks(pd.date_range(start=strategy.index[0], end=strategy.index[-1], freq='Y'))  # Yearly ticks
-    ax.set_xticklabels([d.year for d in pd.date_range(start=strategy.index[0], end=strategy.index[-1], freq='Y')])
-
+    ax = (strategy.loc[start_date:end_date].returns + 1).cumprod().plot(kind='line', label='EMA Crossover', title='Strategy Performances', ylabel='Total Return (multiples)', figsize=(10,6))
+    (np.exp(strategy.loc[start_date:end_date].log_return.cumsum())).plot(kind='line', label='Buy and Hold', grid=True, ax=ax)
+    ax.xaxis.set_major_locator(mdates.YearLocator())  # set ticks for each year
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y')) # format of the year label
+    plt.legend(loc='upper left');
     plt.savefig(os.path.join('./app/static/data', 'plot_strategy_ema.png'))
     plt.close()
     return [benchmark_performance_stat, strategy_performance_stat]
@@ -190,11 +193,13 @@ def ema_crossover_rsi_strategy():
     TICKER = 'KO'
     df_indicators = process_data()
     data = df_indicators.xs(level='ticker', key=TICKER)
+    
+    DEFAULT_COLUMNS = ['open', 'high', 'low', 'close']
     #
     # required indicators
-    strategy = data[
+    strategy = data[DEFAULT_COLUMNS + 
         [
-            'close', 'volume', 'log_return',
+            'volume', 'log_return',
             'ema_5', 'ema_10','ema_21', 'ema_50',
             'rsi_7', 'rsi_9', 'rsi_10', 'rsi_14',
         ]
@@ -221,7 +226,11 @@ def ema_crossover_rsi_strategy():
     utils.strategy_peformance(strategy.loc[start_date:end_date])
     # visualize the performance of the strategy
     plt.switch_backend('Agg')  # Use non-interactive backend
-    (strategy.returns + 1).cumprod().plot(kind='line', grid=True, title='Strategy Performance', figsize=(10,6));
+    ax = (strategy.loc[start_date:end_date].returns + 1).cumprod().plot(kind='line', label='EMA Crossover + RSI', title='Strategy Performances', ylabel='Total Return (multiples)', figsize=(10,6))
+    (np.exp(strategy.loc[start_date:end_date].log_return.cumsum())).plot(kind='line', label='Buy and Hold', grid=True, ax=ax)
+    ax.xaxis.set_major_locator(mdates.YearLocator())  # set ticks for each year
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y')) # format of the year label
+    plt.legend(loc='upper left');
     plt.savefig(os.path.join('./app/static/data', 'plot_strategy_ema_rsi.png'))
     plt.close()
 
@@ -230,15 +239,16 @@ def rsi_adx_strategy():
     TICKER = 'KO'
     df_indicators = process_data()
     data = df_indicators.xs(level='ticker', key=TICKER)
+    DEFAULT_COLUMNS = ['open', 'high', 'low', 'close']
     #
     # required indicators
-    strategy = data[
-    [
-        'close', 'volume', 'log_return',
-        'rsi_7', 'rsi_9', 'rsi_10', 'rsi_14',
-        'adx_3', 'adx_5', 'adx_7', 'adx_14',
+    strategy = data[DEFAULT_COLUMNS + 
+        [
+            'volume', 'log_return',
+            'rsi_7', 'rsi_9', 'rsi_10', 'rsi_14',
+            'adx_3', 'adx_5', 'adx_7', 'adx_14',
 
-    ]
+        ]
     ].dropna()
 
     K = 7 # using the same K=7 as before
@@ -263,7 +273,11 @@ def rsi_adx_strategy():
     utils.strategy_peformance(strategy.loc[start_date:end_date])
     # visualize the performance of the strategy
     plt.switch_backend('Agg')  # Use non-interactive backend
-    (strategy.returns + 1).cumprod().plot(kind='line', grid=True, title='Strategy Performance', figsize=(10,6));
+    ax = (strategy.loc[start_date:end_date].returns + 1).cumprod().plot(kind='line', label='EMA Crossover', title='Strategy Performances', ylabel='Total Return (multiples)', figsize=(10,6))
+    (np.exp(strategy.loc[start_date:end_date].log_return.cumsum())).plot(kind='line', label='Buy and Hold', grid=True, ax=ax)
+    ax.xaxis.set_major_locator(mdates.YearLocator())  # set ticks for each year
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y')) # format of the year label
+    plt.legend(loc='upper left');
     plt.savefig(os.path.join('./app/static/data', 'plot_strategy_rsi_adx.png'))
     plt.close()
 
@@ -292,7 +306,7 @@ def indicator_ml_strategy():
     strategy['x5'] = strategy['ema_10'] - strategy['ema_21']
     strategy['x6'] = strategy['ema_21'] - strategy['ema_50']
 
-        # create target variable to predict - idea is that since the default strategy would not be 100% accurate
+    # create target variable to predict - idea is that since the default strategy would not be 100% accurate
     # we will use the machine learning model to learn and filter out the signals using information from other indicators
     K = 7 # using the same K=7 as before
     RSI_K = 14
@@ -319,7 +333,7 @@ def indicator_ml_strategy():
     model = RandomForestClassifier() # instantiate the model 
     model.fit(train_X, train_y) # this api call trains the model
 
-    # evaluate the model accuracy
+   # evaluate the model accuracy
     test_X, test_y = test[FEATURES], test['target']
     y_pred = model.predict(test_X)
     acc = accuracy_score(test_y, y_pred)
@@ -343,6 +357,12 @@ def indicator_ml_strategy():
     # visualize the performance of the strategy using model - notice the fewer sharp drops throughout the period
     plt.switch_backend('Agg')  # Use non-interactive backend
     (out_of_sample_with_model.returns + 1).cumprod().plot(kind='line', grid=True, title='Strategy Performance', figsize=(10,6));
+
+
+    # Comparison 
+    #     ax = (out_of_sample_without_model.returns + 1).cumprod().plot(kind='line', label='Strategy 1: EMA Crossover', title='Strategy Performances', ylabel='Total Return (multiples)', figsize=(10,6))
+    # (   out_of_sample_with_model.returns + 1).cumprod().plot(kind='line', label='Strategy 4: Strategy 1 + ML Filter', grid=True, ax=ax)
+    #     plt.legend(loc='upper left');
     plt.savefig(os.path.join('./app/static/data', 'plot_strategy_ml_indicator.png'))
     plt.close()
 
