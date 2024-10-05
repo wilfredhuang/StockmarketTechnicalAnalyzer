@@ -189,9 +189,9 @@ def ema_crossover_strategy():
     # Price Chart
     start_date = '2010-01-01'
     end_date = '2022-12-31'
-    chart_url = utils.visualise_pricechart(strategy, start=start_date, end=end_date, indicators=['EMA'], signal_marker=True)
+    price_chart = utils.visualise_pricechart(strategy, start=start_date, end=end_date, indicators=['EMA'], signal_marker=True)
 
-    return [benchmark_performance_stat, strategy_performance_stat, chart_url]
+    return [benchmark_performance_stat, strategy_performance_stat, price_chart]
 
 # Strategy Two
 def ema_crossover_rsi_strategy():
@@ -228,8 +228,8 @@ def ema_crossover_rsi_strategy():
     # print the performance statistic of the strategy and the buy-and-hold
     start_date = '2010-01-01'
     end_date = '2022-12-31'
-    utils.benchmark_performance(data, start_date, end_date)
-    utils.strategy_peformance(strategy.loc[start_date:end_date])
+    benchmark_performance_stat = utils.benchmark_performance(data, start_date, end_date)
+    strategy_performance_stat = utils.strategy_peformance(strategy.loc[start_date:end_date])
     # visualize the performance of the strategy
     plt.switch_backend('Agg')  # Use non-interactive backend
     ax = (strategy.loc[start_date:end_date].returns + 1).cumprod().plot(kind='line', label='EMA Crossover + RSI', title='Strategy Performances', ylabel='Total Return (multiples)', figsize=(10,6))
@@ -239,6 +239,16 @@ def ema_crossover_rsi_strategy():
     plt.legend(loc='upper left');
     plt.savefig(os.path.join('./app/static/data', 'plot_strategy_ema_rsi.png'))
     plt.close()
+
+    # Price Chart
+    start_date = '2010-01-01'
+    end_date = '2022-12-31'
+    price_chart = utils.visualise_pricechart(strategy, start=start_date, end=end_date, indicators=['EMA'], signal_marker=True)
+
+    return [benchmark_performance_stat, strategy_performance_stat, price_chart]
+
+
+    
 
 def rsi_adx_strategy():
     # possibly a dropdown to let user select ticker to visualize
@@ -275,8 +285,8 @@ def rsi_adx_strategy():
     # print the performance statistic of the strategy and the buy-and-hold
     start_date = '2010-01-01'
     end_date = '2022-12-31'
-    utils.benchmark_performance(data, start_date, end_date)
-    utils.strategy_peformance(strategy.loc[start_date:end_date])
+    benchmark_performance_stat = utils.benchmark_performance(data, start_date, end_date)
+    strategy_performance_stat = utils.strategy_peformance(strategy.loc[start_date:end_date])
     # visualize the performance of the strategy
     plt.switch_backend('Agg')  # Use non-interactive backend
     ax = (strategy.loc[start_date:end_date].returns + 1).cumprod().plot(kind='line', label='EMA Crossover', title='Strategy Performances', ylabel='Total Return (multiples)', figsize=(10,6))
@@ -286,6 +296,13 @@ def rsi_adx_strategy():
     plt.legend(loc='upper left');
     plt.savefig(os.path.join('./app/static/data', 'plot_strategy_rsi_adx.png'))
     plt.close()
+
+    # Price Chart
+    start_date = '2010-01-01'
+    end_date = '2022-12-31'
+    chart_url = utils.visualise_pricechart(strategy, start=start_date, end=end_date, indicators=['EMA'], signal_marker=True)
+
+    return [benchmark_performance_stat, strategy_performance_stat, chart_url]
 
 def indicator_ml_strategy():
     # possibly a dropdown to let user select ticker to visualize

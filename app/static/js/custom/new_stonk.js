@@ -1,26 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-  // Bootstrap Tab (JS Code for this may not be needed)
-  const tabs = document.querySelectorAll(".nav-link");
-  const tabContents = document.querySelectorAll(".tab-pane");
-
-  tabs.forEach((tab) => {
-    tab.addEventListener("click", function (event) {
-      event.preventDefault(); // Prevent default anchor click behavior
-
-      // Remove active class from all tabs and hide all tab contents
-      tabs.forEach((t) => t.classList.remove("active"));
-      tabContents.forEach((content) =>
-        content.classList.remove("show", "active")
-      );
-
-      // Add active class to the clicked tab and show corresponding content
-      this.classList.add("active");
-      const target = document.querySelector(this.getAttribute("href"));
-      target.classList.add("show", "active");
-    });
-  });
-  //
-
   // Generic function template to send requests with fetch
   function sendRequest(url, method, data) {
     return fetch(url, {
