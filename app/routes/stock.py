@@ -3,6 +3,8 @@ import pandas as pd
 import yfinance as yf
 from dash import Dash, dcc, html
 import plotly.express as px
+import plotly
+import json
 from flask import Blueprint
 
 from app.helpers.market_utils import (ema_crossover_rsi_strategy, ema_crossover_strategy,
@@ -50,7 +52,11 @@ def process_stock_data_request():
             data_statistics = ema_crossover_strategy()
             benchmark_data = data_statistics[0]
             strat_perf_data = data_statistics[1]
-            return jsonify(image_url='static/data/plot_strategy_ema.png', benchmark_data=benchmark_data, strat_perf_data=strat_perf_data, nums="12345")
+            fig = data_statistics[2]
+            # Convert the figure to JSON
+            graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+            #print(f"Chart URL is {chart_url}")
+            return jsonify(image_url='static/data/plot_strategy_ema.png', benchmark_data=benchmark_data, strat_perf_data=strat_perf_data, graphJSON=graphJSON)
         case "2":
             print("2")
             ema_crossover_rsi_strategy()

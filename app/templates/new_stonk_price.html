@@ -1,0 +1,70 @@
+{% extends "layouts/layout.html" %}
+
+{% block title %}Home - Flask Starter App{% endblock %}
+
+{% block extra_css %}{% endblock %}
+
+
+{% block content %}
+
+<!-- Form to select parameters -->
+<form id="chart-form">
+    <label for="ticker">Ticker:</label>
+    <input type="text" id="ticker" name="ticker" required><br>
+
+    <label for="start">Start Date:</label>
+    <input type="date" id="start" name="start"><br>
+
+    <label for="end">End Date:</label>
+    <input type="date" id="end" name="end"><br>
+
+    <label for="indicators">Indicators:</label><br>
+    <input type="checkbox" name="indicators" value="SMA">SMA<br>
+    <input type="checkbox" name="indicators" value="EMA">EMA<br>
+    <input type="checkbox" name="indicators" value="BB">Bollinger Bands<br>
+
+    <label for="signal_marker">Show Trade Signals:</label>
+    <input type="checkbox" id="signal_marker" name="signal_marker"><br><br>
+
+    <button type="button" onclick="generateChart()">Generate Chart</button>
+</form>
+
+<!-- Placeholder to load the chart -->
+<div id="chart-container">
+    <!-- The iframe will be dynamically added here -->
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function generateChart() {
+        // Collect form data
+        const formData = {
+            ticker: document.getElementById('ticker').value,
+            start: document.getElementById('start').value,
+            end: document.getElementById('end').value,
+            indicators: Array.from(document.querySelectorAll('input[name="indicators"]:checked')).map(el => el.value),
+            signal_marker: document.getElementById('signal_marker').checked
+        };
+
+        // Send the POST request
+        fetch('/generate_chart', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Load the chart by updating the DOM
+            const chartContainer = document.getElementById('chart-container');
+            chartContainer.innerHTML = `<iframe src="${data.chart_url}" width="1200" height="800"></iframe>`;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+</script>
+{% endblock %}

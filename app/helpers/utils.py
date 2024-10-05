@@ -3,6 +3,8 @@ import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+import os
+
 # import warnings
 # warnings.filterwarnings("ignore")
 
@@ -164,7 +166,7 @@ def strategy_peformance(data: pd.DataFrame):
 
     return strat_performance_dict
 
-def visualise_pricechart(
+def visualise_pricechart_old(
         df: pd.DataFrame, 
         start: Optional[str] = None, 
         end: Optional[str] = None, 
@@ -244,6 +246,106 @@ def visualise_pricechart(
         legend=dict(x=0.01, y=0.99)
     )
     fig.show()
+
+
+def visualise_pricechart(
+        df: pd.DataFrame,
+        start: Optional[str] = None,
+        end: Optional[str] = None,
+        ticker: Optional[str] = None,
+        indicators: List[str] = None,
+        signal_marker: bool = False
+    ) -> go.Figure:
+    """
+    indicators can be any of ['SMA', 'EMA', 'RSI', 'ADX', 'Bollinger Band']
+    signal_marker: <bool> False for Tab 1: Price Chart, True for Tab 2 to show where the trades were taken on the price chart
+    (NOT TO BE CONFUSED WITH STRATEGY PERFORMANCE CHART, TAB 2 SHOWS 2 CHARTS AND 1 TABLE)
+    TAB 2, CHART 1: PRICE CHART WITH MARKETS (signal = True)
+    TAB 2, CHART 2: STRATEGY PERFORMANCE
+    TAB 2, TABLE 1: PERFORMANCE METRICS
+    """
+    indicators_to_columns = {
+        'SMA': ['sma_21', 'sma_50'],
+        'EMA': ['ema_21', 'ema_50'],
+        # 'RSI': ['rsi_14'], # show by default
+        # 'ADX': ['adx_14'],
+        'BB': ['bb_5_lb', 'bb_5_ub', 'bb_5_mb'],
+    }
+    columns = ['open', 'high', 'low', 'close', 'rsi_14']
+    # Select ticker from dataframe
+    if ticker:
+        data = df.xs(ticker, level='ticker').copy()
+    else:
+        data = df.copy()
+    # Using the given date range
+    if start and end:
+        data = data.loc[start:end]
+    # Visualisation: 2 rows, 1 column with shared x-axis(time)
+    fig = make_subplots(
+        rows=2, cols=1,
+        shared_xaxes=True,
+        vertical_spacing=0.1,
+        row_heights=[0.75, 0.25],  # Relative heights of the subplots
+        subplot_titles=[
+            f'Price Chart: {ticker}',
+            'RSI',
+        ]
+    )
+   
+    # Default candlestick representation
+    fig.add_trace(go.Candlestick(
+        x=data.index,
+        open=data['open'],
+        high=data['high'],
+        low=data['low'],
+        close=data['close'],
+        name='Candlestick'), row=1, col=1
+    )
+   
+    # See which indicator to add
+    if indicators:
+        for name in indicators:
+            cols = indicators_to_columns.get(name, [])
+            for c in cols:
+                fig.add_trace(go.Scatter(
+                    x=data.index,
+                    y=data[c],
+                    mode='lines',
+                    name=f"{name}_{c}",
+                    line=dict(color='orange', width=1)
+                ), row=1, col=1)
+    if signal_marker:
+        trade_signals = go.Scatter(
+            x=data[data.signal == 1].index,
+            y=data[data.signal == 1]['close'],  
+            mode='markers',
+            marker=dict(size=5, color='purple', symbol='triangle-up'),
+            name='Trade Signal',
+        )
+        fig.add_trace(trade_signals, row=1, col=1)
+    # Add RSI by default
+    fig.add_trace(go.Scatter(
+        x=data.index,
+        y=data['rsi_14'],
+        mode='lines',
+        name='RSI',
+        line=dict(color='blue', width=2)
+    ), row=2, col=1)
+    # Update layout for the subplots
+    fig.update_layout(
+        title='',
+        xaxis2_title='Date',  # Title for the second subplot's x-axis
+        yaxis=dict(title='Price'),
+        width=1200,
+        height=800,
+        yaxis2=dict(title='RSI', range=[0, 100]),  # Set the y-axis range for RSI and ADX
+        xaxis_rangeslider_visible=False,  # Hide range slider
+        legend=dict(x=0.01, y=0.99)
+    )
+    # Return the Plotly figure object
+    return fig
+
+
 
 
   

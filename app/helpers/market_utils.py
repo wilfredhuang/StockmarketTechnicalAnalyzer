@@ -185,7 +185,13 @@ def ema_crossover_strategy():
     plt.legend(loc='upper left');
     plt.savefig(os.path.join('./app/static/data', 'plot_strategy_ema.png'))
     plt.close()
-    return [benchmark_performance_stat, strategy_performance_stat]
+
+    # Price Chart
+    start_date = '2010-01-01'
+    end_date = '2022-12-31'
+    chart_url = utils.visualise_pricechart(strategy, start=start_date, end=end_date, indicators=['EMA'], signal_marker=True)
+
+    return [benchmark_performance_stat, strategy_performance_stat, chart_url]
 
 # Strategy Two
 def ema_crossover_rsi_strategy():
