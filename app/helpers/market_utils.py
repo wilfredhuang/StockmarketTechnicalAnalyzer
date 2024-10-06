@@ -23,6 +23,7 @@ from . import utils
 import importlib
 importlib.reload(utils)
 
+# Wilfred's Portion
 
 # === Data Retrieval ===
 def fetch_stock_data(TICKERS, START_DATE, END_DATE):
@@ -262,7 +263,8 @@ def rsi_adx_strategy():
         [
             'volume', 'log_return',
             'rsi_7', 'rsi_9', 'rsi_10', 'rsi_14',
-            'adx_3', 'adx_5', 'adx_7', 'adx_14',
+            'adx_3', 'adx_5', 'adx_7', 'adx_14', 
+            'ema_10', 'ema_21', 'ema_50'
 
         ]
     ].dropna()
@@ -371,12 +373,12 @@ def indicator_ml_strategy():
     out_of_sample_with_model = strategy[strategy.signal == 1].loc[TEST_START:].copy()
     out_of_sample_with_model['signal'] = y_pred
     out_of_sample_with_model = out_of_sample_with_model[out_of_sample_with_model.signal == 1]
-    utils.strategy_peformance(out_of_sample_with_model)
+    strategy_peformance_stat = utils.strategy_peformance(out_of_sample_with_model)
 
     spy = pd.read_csv('./app/static/data/spy.csv', parse_dates=['date'])
     spy.set_index('date', inplace=True)
 
-    utils.benchmark_performance(spy, '2024-01-01', '2024-07-20') # and we kind of beat the index as well
+    benchmark_performance_stat = utils.benchmark_performance(spy, '2024-01-01', '2024-07-20') # and we kind of beat the index as well
     # visualize the performance of the strategy using model - notice the fewer sharp drops throughout the period
     plt.switch_backend('Agg')  # Use non-interactive backend
     (out_of_sample_with_model.returns + 1).cumprod().plot(kind='line', grid=True, title='Strategy Performance', figsize=(10,6));
@@ -388,6 +390,8 @@ def indicator_ml_strategy():
     #     plt.legend(loc='upper left');
     plt.savefig(os.path.join('./app/static/data', 'plot_strategy_ml_indicator.png'))
     plt.close()
+
+    return [benchmark_performance_stat, strategy_peformance_stat]
 
 
 #def visualise_pricechart(df: pd.DataFrame, ticker: str, start: str, end: str, indicators: List[str]):

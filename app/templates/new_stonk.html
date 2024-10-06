@@ -31,6 +31,20 @@
 
 {% endblock %} {% block content %}
 <div class="container mt-4"></div>
+<!-- Flash Messages Container (the div is always rendered, even if empty) -->
+<div id="flash-messages">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} alert-dismissible fade show mt-2" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+  {% endwith %}
+</div>
+
 <ul class="nav nav-tabs" id="myTab" role="tablist">
   <li class="nav-item" role="presentation">
     <a
@@ -78,6 +92,34 @@
     aria-labelledby="input-tab"
   >
     <br />
+
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <p> Javascript Function Tester </p>
+      </div>
+      <div class="col-md-6">
+        <button id="testing-btn" class="btn btn-success w-100">
+          Test!
+        </button>
+      </div>
+    </div>
+
+    <!-- Input Form for Fetch Data to CSV-->
+        <div class="mb-3">
+          <label for="ticker" class="form-label">Enter Ticker</label>
+          <input type="text" class="form-control" id="ticker" name="ticker" required />
+        </div>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="start" class="form-label">Start Date</label>
+            <input type="date" class="form-control" id="start" name="start" />
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="end" class="form-label">End Date</label>
+            <input type="date" class="form-control" id="end" name="end" />
+          </div>
+        </div>
+    <!-- === -->
     <div class="row mb-3">
       <div class="col-md-6">
         <p>Fetch Data</p>
@@ -88,6 +130,9 @@
         </button>
       </div>
     </div>
+
+    
+      
 
     <div class="row mb-3">
       <div class="col-md-6">
@@ -115,16 +160,6 @@
       <div class="col-md-6">
         <button id="process-data-btn" class="btn btn-success w-100">
           Process Data
-        </button>
-      </div>
-    </div>
-    <div class="row mb-3">
-      <div class="col-md-6">
-        <p>Visualise Stock Price</p>
-      </div>
-      <div class="col-md-6">
-        <button id="show-stock-price-btn" class="btn btn-success w-100">
-          Visualise Stock Price
         </button>
       </div>
     </div>
@@ -287,6 +322,7 @@
     <!-- Trading Statistics (Strategy Performance) -->
 
     <!-- Trading Statistics (Benchmark Performance) -->
+     <br>
     <h1 class="text-center mb-4">Benchmark Statistics</h1>
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
       <div class="col">
