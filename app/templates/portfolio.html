@@ -1,0 +1,52 @@
+{% extends "layouts/layout.html" %}
+{% block content %}
+<h1 class="title">
+    <h1>Welcome, {{ current_user.name }}!</h1>
+</h1>
+<body>
+    <div class="container mt-5">
+        <h2>Your Portfolio</h2>
+
+        {% if portfolio_data %}
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Ticker</th>
+                    <th>Shares</th>
+                    <th>Price per Share</th>
+                    <th>Total Price</th>
+                    <th>Predicted Price Per Share</th>
+                    <th>Predicted Total Price</th>
+                    <th>Predicted Profit/Loss ($)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for portfolio_data in portfolio_data %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ portfolio_data[0] }}</td>
+                    <td>{{ portfolio_data[1] }}</td>
+                    <td>{{ portfolio_data[2] }}</td>
+                    <td>{{ portfolio_data[3] }}</td>
+                    <td>{{ portfolio_data[4] }}</td>
+                    <td>{{ portfolio_data[5] }}</td>
+                    {% if portfolio_data[6] < 0: %}
+                        <td style="color:red">{{ portfolio_data[6] }}</td>
+                    {% else: %}
+                        <td style="color:green">+{{ portfolio_data[6] }}</td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <div>
+            <canvas id="myChart" style="height: 20%;width: 20%;"></canvas>
+        </div>
+
+        {% else %}
+        <p>No tickers found. Add some to see them here.</p>
+        {% endif %}
+</body>
+{% endblock %}

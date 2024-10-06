@@ -100,6 +100,6 @@ def test_linear_model(company, date, csvFile, model):
     plt.show()
     pass
 
-model = train_linear_model('stock_data_20240925_124231.csv')
-predictions = predict_linear_model('AAPL','2023-08-02','stock_data_20240925_124231.csv', model)
+# model = train_linear_model('stock_data_20240925_124231.csv')
+# predictions = predict_linear_model('AAPL','2023-08-02','stock_data_20240925_124231.csv', model)
 

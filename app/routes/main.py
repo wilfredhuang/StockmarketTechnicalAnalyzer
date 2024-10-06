@@ -266,3 +266,40 @@ def delete_ticker(ticker_id):
         flash('Ticker deleted successfully!', 'success')
 
     return redirect(url_for('main.profile'))  # Redirect to the tickers page
+
+
+@main_bp.route('/portfolio', methods=['GET'])
+# @login_required
+def portfolio():
+    try:
+        predicted_prices = []
+        company = ["AAPL", "GOOGL", "AMZN", "MSFT"]
+        csv_file = f"stock_data_{datetime.now().strftime('%Y-%m-%d')}.csv"
+
+        for i in range(len(company)):
+            linear_model = pu.train_linear_model(csv_file)
+            date = ''
+            prediction_data, historical_data = pu.predict_linear_model(company[i], date, csv_file, linear_model)
+            predicted_prices.append([company[i], prediction_data.Results[0]])
+
+        user_tickers = StockTicker.query.filter_by(user_id=current_user.id).all()
+        portfolio_data_ranked = []
+
+        for i in range(len(user_tickers)):
+            for y in range(len(predicted_prices)):
+                print(str(user_tickers[i].ticker) == predicted_prices[y][0])
+                print(predicted_prices[y][0] )
+                print("lol")
+                if user_tickers[i].ticker == predicted_prices[y][0]:
+                    print("Pass If")
+                    user_share_total_price = user_tickers[i].price * user_tickers[i].shares
+                    predicted_share_total_price = round(predicted_prices[y][1] * user_tickers[i].shares,2)
+                    projected_profit_loss = round(predicted_share_total_price - user_share_total_price, 2)
+                    portfolio_data_ranked.append([user_tickers[i].ticker, user_tickers[i].shares, user_tickers[i].price, user_share_total_price, round(predicted_prices[y][1], 2), predicted_share_total_price, projected_profit_loss])
+
+        print(portfolio_data_ranked)
+
+        portfolio_data_ranked.sort(reverse = True, key=lambda x:x[5])
+        return render_template('portfolio.html', portfolio_data=portfolio_data_ranked)
+    except Exception as e:
+        flash(f'Error with portfolio: {str(e)}', 'danger')
