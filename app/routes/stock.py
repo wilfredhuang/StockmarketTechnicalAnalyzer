@@ -55,8 +55,7 @@ def fetch_stock_data_request():
     if date_valid & ticker_valid: 
         tickers_list = [ticker.strip() for ticker in tickers.split(',')]
         print(tickers_list)
-        # This will be our tickers, copy this to input on the web app quickly
-        # KO, PEP, WMT, SBUX, MCD, AAL, DAL, F, VZ, T, DIS, BAC, JPM, MA, V, ORCL, AMD, NVDA, AAPL, MSFT
+        # Sample List: KO, PEP, WMT, SBUX, MCD, AAL, DAL, F, VZ, T, DIS, BAC, JPM, MA, V, ORCL, AMD, NVDA, AAPL, MSFT
         # ---Hardcoded Inputs---
         # TICKERS = [
         # 'KO','PEP','WMT', # consumer staples
@@ -69,15 +68,20 @@ def fetch_stock_data_request():
         # START_DATE = "2000-01-01"
         # END_DATE = "2024-07-31"
         # fetch_stock_data(TICKERS, START_DATE, END_DATE)
-        #fetch_stock_data(tickers_list, start_date, end_date)
-        return jsonify(success=True, message="Data Fetched to CSV File!")
+        
+        fetch_stock_data(tickers_list, start_date, end_date)
+        return jsonify(success=True, message="Data Fetched to CSV File!", tickers_list=tickers_list)
     else:
         if ticker_valid == False:
             errors["ticker_msg"] = ticker_msg
         if date_valid == False:
             errors["date_msg"] = date_msg
         return jsonify(success=False, errors=errors)
-    #return "Stock Data Fetched"
+
+# Upload Stock Data File
+@stock_bp.route('/upload-stock-data', methods=['POST'])
+def upload_stock_data_request():
+    data = request.get_json()
 
 # Process Stock Data Post Request
 @stock_bp.route('/process-stock-data', methods=['POST'])

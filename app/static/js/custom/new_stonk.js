@@ -1,4 +1,69 @@
 document.addEventListener("DOMContentLoaded", function () {
+  // Initialize all Bootstrap tooltips
+  var tooltipTriggerList = [].slice.call(
+    document.querySelectorAll('[data-bs-toggle="tooltip"]')
+  );
+  var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl);
+  });
+
+  // Function to dynamically add a flash message
+  function showFlashMessage(category, message) {
+    const flashMessageDiv = document.createElement("div");
+    flashMessageDiv.className = `alert alert-${category} alert-dismissible fade show mt-2`;
+    flashMessageDiv.role = "alert";
+    flashMessageDiv.innerHTML = `
+    ${message}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  `;
+
+    // Add the new flash message to the #flash-messages div
+    document.getElementById("flash-messages").appendChild(flashMessageDiv);
+
+    // Optionally, auto-dismiss the alert after a few seconds
+    setTimeout(function () {
+      var bsAlert = new bootstrap.Alert(flashMessageDiv);
+      bsAlert.close();
+    }, 5000); // Dismiss after 5 seconds
+  }
+
+  // Handle 'Quick Fill' button click
+  function handleQuickFill(data) {
+    // Example logic for quick fill
+    const tickerInput = document.getElementById("ticker");
+    tickerInput.value = data; // Example stock ticker
+  }
+
+  document
+    .getElementById("valid_fetchDataQuickFillBtn")
+    .addEventListener("click", function () {
+      document.getElementById("start").value = "2014-01-01";
+      document.getElementById("end").value = "2024-01-01";
+      handleQuickFill(
+        "KO, PEP, WMT, SBUX, MCD, AAL, DAL, F, VZ, T, DIS, BAC, JPM, MA, V, ORCL, AMD, NVDA, AAPL, MSFT"
+      );
+    });
+
+  document
+    .getElementById("invalidnaming_fetchDataQuickFillBtn")
+    .addEventListener("click", function () {
+      document.getElementById("start").value = "2014-01-01";
+      document.getElementById("end").value = "2013-07-31";
+      handleQuickFill(
+        "KO1, PEP, WMT, SBUX, MCD, AAL, DAL, F, VZ, T, DIS, BAC, JPM, MA, V, ORCL, AMD, NVDA, AAPL, MSFT2"
+      );
+    });
+
+  document
+    .getElementById("invalidlength_fetchDataQuickFillBtn")
+    .addEventListener("click", function () {
+      document.getElementById("start").value = "2014-01-01";
+      document.getElementById("end").value = "2013-07-31";
+      handleQuickFill(
+        "KO, PEP, WMT, SBUX, MCD, AAL, DAL, F, VZ, T, DIS, BAC, JPM, MA, V, ORCL, AMD, NVDA, AAPL, MSFT, GOOGL, AMZN, NFLX, TSLA, META, INTC, PYPL, CRM, IBM, CSCO, HD"
+      );
+    });
+
   // === Generic function template to send requests with fetch ===
   function sendRequest(url, method, data) {
     return fetch(url, {
@@ -29,6 +94,8 @@ document.addEventListener("DOMContentLoaded", function () {
         alert("An error occurred. Please try again.");
       });
   }
+
+  // Main Features Button Handling
 
   // Sandbox Button for testing functions purpose only
   document.getElementById("testing-btn").addEventListener("click", function () {
@@ -73,11 +140,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 Loading...
             `;
 
-      //var data = getFetchFormData();
       var data = true;
       const tickerInput = document.getElementById("ticker").value;
       const startDate = document.getElementById("start").value;
       const endDate = document.getElementById("end").value;
+
+      const tickerDropDownBox = document.getElementById("ticker-select");
 
       if (data != false) {
         sendRequest("/fetch-stock-data", "POST", {
@@ -89,8 +157,29 @@ document.addEventListener("DOMContentLoaded", function () {
             if (data.success) {
               //alert(data.message || data); // Show the message if JSON is returned or text
               showFlashMessage("success", data.message);
+              // Clear any existing options from DDB
+              tickerDropDownBox.innerHTML = "";
+              tickersList = data.tickers_list;
+
+              // Add a placeholder option
+              const placeholderOption = document.createElement("option");
+              placeholderOption.text = "Select a ticker";
+              placeholderOption.value = "";
+              tickerDropDownBox.appendChild(placeholderOption);
+
+              // Populate DDB with tickers from backend
+              tickersList.forEach((ticker) => {
+                const option = document.createElement("option");
+                option.text = ticker;
+                option.value = ticker;
+                tickerDropDownBox.appendChild(option);
+              });
             } else {
               //alert("No content received.");
+              const noOptionsOption = document.createElement("option");
+              noOptionsOption.text = "No tickers available";
+              noOptionsOption.value = ""; // Optional, depending on how you want to handle this
+              tickerDropDownBox.appendChild(noOptionsOption);
               for (i in data.errors) {
                 showFlashMessage("danger", data.errors[i]);
               }
@@ -170,10 +259,14 @@ document.addEventListener("DOMContentLoaded", function () {
               strat_perf_data.profit_factor;
             document.getElementById(
               "sp_average_profit_display"
-            ).textContent = `${strat_perf_data.average_profit}%`;
+            ).textContent = `${(strat_perf_data.average_profit * 100).toFixed(
+              2
+            )}%`;
             document.getElementById(
               "sp_average_loss_display"
-            ).textContent = `${strat_perf_data.average_loss_display}%`;
+            ).textContent = `${(
+              strat_perf_data.average_loss_display * 100
+            ).toFixed(2)}%`;
             // Update Up/Down Days
             const upDaysProgress = document.getElementById(
               "sp_up_days_progress"
@@ -373,121 +466,3 @@ document.addEventListener("DOMContentLoaded", function () {
       console.log("Clicked 2");
     });
 });
-
-// === Data Retrieval from Input Forms Section ===
-// Function to get and validate the form data (ticker, start date, end date)
-function getFetchFormData() {
-  // Get the ticker input value
-  const tickerInput = document.getElementById("ticker").value;
-
-  // Validate the ticker input: Only capital letters and commas
-  const tickerRegex = /^[A-Z,]+$/;
-  if (!tickerRegex.test(tickerInput)) {
-    console.error(
-      "Invalid ticker format. Only capital letters and commas are allowed."
-    );
-    alert("Please enter only capital letters and commas in the ticker field.");
-    return false;
-  }
-
-  // Split the ticker input by comma and trim any extra whitespace
-  const tickersArray = tickerInput
-    .split(",")
-    .map((ticker) => ticker.trim())
-    .filter(Boolean);
-
-  // Ensure no empty values in tickers array
-  if (tickersArray.length === 0) {
-    console.error("Ticker input cannot be empty.");
-    alert("Please enter at least one valid ticker.");
-    return false;
-  }
-
-  // Validate the number of tickers (max 20)
-  if (tickersArray.length > 20) {
-    console.error("You can enter a maximum of 20 tickers.");
-    alert("Please enter a maximum of 20 tickers.");
-    return false;
-  }
-
-  // Get the current date in YYYY-MM-DD format
-  const currentDate = new Date().toISOString().split("T")[0];
-
-  // Get the start and end date input values
-  const startDate = document.getElementById("start").value;
-  const endDate = document.getElementById("end").value;
-
-  // Check if start or end date is missing
-  if (!startDate || !endDate) {
-    console.error("Both start and end dates are required.");
-    alert("Please enter both start and end dates.");
-    return false;
-  }
-
-  // Validate that the start and end dates are not in the future
-  if (startDate > currentDate || endDate > currentDate) {
-    console.error("Start and end dates cannot be later than the current date.");
-    alert("Start and end dates cannot be later than the current date.");
-    return false;
-  }
-
-  // Validate that the end date is not earlier than the start date
-  if (endDate < startDate) {
-    console.error("End date cannot be earlier than the start date.");
-    alert("End date cannot be earlier than the start date.");
-    return false;
-  }
-
-  // Validate tickers via API call
-  try {
-    const response = fetch("/validate-tickers", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ tickers: tickersArray }), // Ensure tickersArray is sent here
-    });
-
-    const result = response.json();
-
-    if (result.invalid.length > 0) {
-      console.error("Invalid tickers: " + result.invalid.join(", "));
-      alert("These tickers are invalid: " + result.invalid.join(", "));
-      return false;
-    }
-  } catch (error) {
-    console.error("Error validating tickers:", error);
-    alert("Failed to validate tickers. Please try again later.");
-    return false;
-  }
-
-  // Log the values or return them as an object
-  console.log("Tickers: ", tickersArray);
-  console.log("Start Date: ", startDate);
-  console.log("End Date: ", endDate);
-
-  // Return the form data as an object
-  return {
-    tickers: tickersArray,
-    startDate,
-    endDate,
-  };
-}
-
-// Function to dynamically add a flash message
-function showFlashMessage(category, message) {
-  const flashMessageDiv = document.createElement("div");
-  flashMessageDiv.className = `alert alert-${category} alert-dismissible fade show mt-2`;
-  flashMessageDiv.role = "alert";
-  flashMessageDiv.innerHTML = `
-    ${message}
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  `;
-
-  // Add the new flash message to the #flash-messages div
-  document.getElementById("flash-messages").appendChild(flashMessageDiv);
-
-  // Optionally, auto-dismiss the alert after a few seconds
-  setTimeout(function () {
-    var bsAlert = new bootstrap.Alert(flashMessageDiv);
-    bsAlert.close();
-  }, 5000); // Dismiss after 5 seconds
-}

@@ -27,19 +27,6 @@ importlib.reload(utils)
 
 # === Data Retrieval ===
 def fetch_stock_data(TICKERS, START_DATE, END_DATE):
-    # Shifted inputs to helper func
-    # user to decide this parameters
-    # TICKERS = [
-    # 'KO','PEP','WMT', # consumer staples
-    # 'SBUX','MCD', # consumer discretionary
-    # 'AAL','DAL','F', # industrials
-    # 'VZ', 'T', 'DIS', # communication services
-    # 'BAC','JPM','MA','V', # financials
-    # 'ORCL','AMD','NVDA','AAPL','MSFT', # information technology
-    # ] 
-    # START_DATE = "2000-01-01"
-    # END_DATE = "2024-07-31"
-
     df = yf.download(tickers=TICKERS, interval="1d", start=START_DATE, end=END_DATE, auto_adjust=True, group_by='ticker')
     # reformat for easy read from store
     df = df.stack(level='Ticker')
@@ -78,7 +65,6 @@ def process_data():
     return df_indicators
 
 def contruct_indicators(group):
-
     # indicator: Simple Moving Averages
     group['sma_5'] = ta.sma(group['close'], length=5)
     group['sma_10'] = ta.sma(group['close'], length=10)
@@ -149,6 +135,7 @@ def log_returns(group, periods=[1]):
 
 # === Data Analysis / Visualisation ===
 # Strategy One
+# def ema_crossover_strategy(TICKER,DEFAULT_COLUMNS,K):
 def ema_crossover_strategy():
     TICKER='KO'
     df_indicators = process_data()
@@ -195,6 +182,7 @@ def ema_crossover_strategy():
     return [benchmark_performance_stat, strategy_performance_stat, price_chart]
 
 # Strategy Two
+# def ema_crossover_strategy(TICKER,DEFAULT_COLUMNS,K, RSI_K):
 def ema_crossover_rsi_strategy():
     # possibly a dropdown to let user select ticker to visualize
     TICKER = 'KO'
@@ -250,7 +238,7 @@ def ema_crossover_rsi_strategy():
 
 
     
-
+# def rsi_adx_strategy(TICKER,DEFAULT_COLUMNS,K, RSI_K, ADX_K)):
 def rsi_adx_strategy():
     # possibly a dropdown to let user select ticker to visualize
     TICKER = 'KO'
@@ -306,6 +294,7 @@ def rsi_adx_strategy():
 
     return [benchmark_performance_stat, strategy_performance_stat, chart_url]
 
+# def indicator_ml_strategy(TICKER, K, RSI_K, TRAIN_END, TEST_PERIOD_WEEKS, TEST_START, FEATURES):
 def indicator_ml_strategy():
     # possibly a dropdown to let user select ticker to visualize
     TICKER = 'KO'

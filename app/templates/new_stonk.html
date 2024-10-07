@@ -105,10 +105,25 @@
     </div>
 
     <!-- Input Form for Fetch Data to CSV-->
-        <div class="mb-3">
+        <!-- <div class="mb-3">
           <label for="ticker" class="form-label">Enter Ticker</label>
+          <button type="button" class="btn btn-link p-0" id="quickFillBtn" >Quick Fill</button>
           <input type="text" class="form-control" id="ticker" name="ticker" required />
+        </div> -->
+        <div class="mb-3">
+          <div class="d-flex align-items-center mb-2">
+            <!-- <label for="ticker" class="form-label mb-0 me-2">Enter Ticker</label> -->
+            <label for="ticker" class="form-label mb-0 me-2" 
+           data-bs-toggle="tooltip" 
+           data-bs-placement="top" 
+           title="Enter the stock ticker symbol">Enter Ticker</label>
+            <button type="button" class="btn btn-link p-0 ms-auto" id="valid_fetchDataQuickFillBtn">Valid Quick Fill</button>
+            <button type="button" class="btn btn-link p-0 ms-auto" id="invalidnaming_fetchDataQuickFillBtn">Invalid Example (Naming) </button>
+            <button type="button" class="btn btn-link p-0 ms-auto" id="invalidlength_fetchDataQuickFillBtn">Invalid Example (Ticker Length)</button>
+          </div>
+          <input type="text" class="form-control" id="ticker" name="ticker" placeholder="Enter up to 30 stock tickers in uppercase, separated by comma" required />
         </div>
+        
         <div class="row">
           <div class="col-md-6 mb-3">
             <label for="start" class="form-label">Start Date</label>
@@ -132,13 +147,28 @@
     </div>
 
     
-      
+    <!-- <div class="mb-3">
+      <label for="formFile" class="form-label">Upload Your File</label>
+      <input class="form-control" type="file" id="formFile">
+    </div>
+    <button type="button" class="btn btn-primary" onclick="submitFilePath()">Submit</button> -->
 
     <div class="row mb-3">
       <div class="col-md-6">
         <p>Process Data</p>
       </div>
     </div>
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <p>Select Ticker</p>
+      </div>
+      <div class="col-md-6">
+        <select id="ticker-select" class="form-control">
+          <option value=""> No ticker found </option>
+        </select>
+      </div>
+    </div>
+
     <div class="row mb-3">
       <div class="col-md-6">
         <p>Select Strategy</p>

@@ -4,6 +4,11 @@ from datetime import datetime
 def validate_ticker_list(ticker_list):
     # Split ticker_list by commas and strip extra spaces
     tickers = [ticker.strip() for ticker in ticker_list.split(',')]
+    
+    # Check if the number of tickers exceeds 30
+    if len(tickers) > 30:
+        return False, "The list contains more than 30 ticker symbols, which is not allowed."
+    
     invalid_tickers = []
     
     for ticker in tickers:
@@ -18,6 +23,7 @@ def validate_ticker_list(ticker_list):
     
     if invalid_tickers:
         return False, f"Invalid tickers: {', '.join(invalid_tickers)}"
+    
     return True, "All tickers are valid."
 
 def validate_dates(start_date, end_date):
