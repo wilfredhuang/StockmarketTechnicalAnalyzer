@@ -117,7 +117,7 @@
                     <td class="editable" data-field="symbol">{{ ticker.ticker }}</td>
                     <td class="editable" data-field="price">${{ ticker.price }}</td>
                     <td class="editable" data-field="shares">{{ ticker.shares }}</td>
-                    <td class="editable" data-field="totalprice">${{ ticker.price*ticker.shares }}</td>
+                    <td class="editable" data-field="totalprice">${{ ticker.total_price }}</td>
                 {% if ticker.profit_loss is not none %}
                     <td class="editable {{ 'profit' if ticker.profit_loss >= 0 else 'loss' }}" data-field="pandl">
                     ${{ ticker.profit_loss }}
