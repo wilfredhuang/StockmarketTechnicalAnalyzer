@@ -111,9 +111,9 @@ def process_stock_data_request():
             data_statistics = indicator_ml_strategy(ticker)
             benchmark_data = data_statistics[0]
             strat_perf_data = data_statistics[1]
-            #fig = data_statistics[2]
-            #graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
-            return jsonify(image_url='static/data/plot_strategy_ml_indicator.png', image_url_second='static/data/plot_strategy_ml_indicator_comparison.png', benchmark_data=benchmark_data, strat_perf_data=strat_perf_data)
+            fig = data_statistics[2]
+            graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+            return jsonify(image_url='static/data/plot_strategy_ml_indicator.png', image_url_second='static/data/plot_strategy_ml_indicator_comparison.png', benchmark_data=benchmark_data, strat_perf_data=strat_perf_data, graphJSON=graphJSON)
         case _:
             print("No option selected")
 

@@ -86,8 +86,8 @@ function loadQuickFillButtons() {
     .addEventListener("click", function () {
       handleQuickFill(
         "KO, PEP, WMT, SBUX, MCD, AAL, DAL, F, VZ, T, DIS, BAC, JPM, MA, V, ORCL, AMD, NVDA, AAPL, MSFT",
-        "2014-01-01",
-        "2024-07-31"
+        "2013-12-31",
+        "2024-03-31"
       );
     });
 
@@ -96,8 +96,8 @@ function loadQuickFillButtons() {
     .addEventListener("click", function () {
       handleQuickFill(
         "KO1, PEP, WMT, SBUX, MCD, AAL, DAL, F, VZ, T, DIS, BAC, JPM, MA, V, ORCL, AMD, NVDA, AAPL, MSFT2",
-        "2014-01-01",
-        "2024-01-01"
+        "2013-12-31",
+        "2024-03-31"
       );
     });
 
@@ -106,8 +106,8 @@ function loadQuickFillButtons() {
     .addEventListener("click", function () {
       handleQuickFill(
         "KO, PEP, WMT, SBUX, MCD, AAL, DAL, F, VZ, T, DIS, BAC, JPM, MA, V, ORCL, AMD, NVDA, AAPL, MSFT, GOOGL, AMZN, NFLX, TSLA, META, INTC, PYPL, CRM, IBM, CSCO, HD",
-        "2014-01-01",
-        "2013-07-31"
+        "2023-12-31",
+        "2014-03-31"
       );
     });
 }

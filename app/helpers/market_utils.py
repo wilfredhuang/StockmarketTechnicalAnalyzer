@@ -345,9 +345,10 @@ def rsi_adx_strategy(TICKER):
 def indicator_ml_strategy(TICKER):
     df_indicators = process_data()
     data = df_indicators.xs(level='ticker', key=TICKER)
-    strategy = data[
+    DEFAULT_COLUMNS = ['open', 'high', 'low', 'close']
+    strategy = data[DEFAULT_COLUMNS +
         [
-            'close', 'log_return',
+            'log_return',
             'ema_5', 'ema_10', 'ema_21','ema_50',
             'rsi_14',
             'adx_14',
@@ -378,11 +379,16 @@ def indicator_ml_strategy(TICKER):
     dataset['target'] = (dataset.returns > 0).astype(np.int32)
 
     # train-test split
+
+    # We will use data from December 2013 to December 2022 as the training period (9 years of training data).
+    # After the training period, we will apply a buffer period of 3 months (12 weeks) between training and testing sets.
+    # This waiting period is suitable for our shorter-term strategies, which have a 7-day holding period.
+    # Finally, the test period will start after the waiting period, i.e., from March 2023 onwards, until the current date.
     TRAIN_END = '2022-12-31' # define last period of training date
-    TEST_PERIOD_WEEKS = 52
+    TEST_PERIOD_WEEKS = 12 # Buffer Period
     TEST_START = str((pd.to_datetime(TRAIN_END) + pd.Timedelta(value=TEST_PERIOD_WEEKS, unit='W')).date())
-    train = dataset.loc[:TRAIN_END]
-    test = dataset.loc[TEST_START:]
+    train = dataset.loc[:TRAIN_END] # Data from the start until the end of the training period
+    test = dataset.loc[TEST_START:] # Data from the beginning of the test period (after the buffer) until the current date
 
     # train the model 
     FEATURES = ['rsi_14', 'adx_14', 'bb_5_bw', 'bb_5_p','norm_volume_5', 'norm_volume_10','x1', 'x2', 'x3', 'x4', 'x5', 'x6']
@@ -406,8 +412,6 @@ def indicator_ml_strategy(TICKER):
     out_of_sample_with_model['signal'] = y_pred
     out_of_sample_with_model = out_of_sample_with_model[out_of_sample_with_model.signal == 1]
     strategy_peformance_stat = metric_utils.strategy_peformance(out_of_sample_with_model)
-
-    
     # without using model
     out_of_sample_without_model = strategy[strategy.signal == 1].loc[TEST_START:]
 
@@ -415,16 +419,10 @@ def indicator_ml_strategy(TICKER):
     spy = pd.read_csv('./app/static/data/spy.csv', parse_dates=['date'])
     spy.set_index('date', inplace=True)
 
-    benchmark_performance_stat = metric_utils.benchmark_performance(spy, '2024-01-01', '2024-07-20') # and we kind of beat the index as well
+    benchmark_performance_stat = metric_utils.benchmark_performance(spy, '2023-03-25', '2024-07-25') # and we kind of beat the index as well
     # visualize the performance of the strategy using model - notice the fewer sharp drops throughout the period
     plt.switch_backend('Agg')  # Use non-interactive backend
     (out_of_sample_with_model.returns + 1).cumprod().plot(kind='line', grid=True, title='Strategy Performance', figsize=(10,6));
-
-
-    # Comparison 
-    #     ax = (out_of_sample_without_model.returns + 1).cumprod().plot(kind='line', label='Strategy 1: EMA Crossover', title='Strategy Performances', ylabel='Total Return (multiples)', figsize=(10,6))
-    # (   out_of_sample_with_model.returns + 1).cumprod().plot(kind='line', label='Strategy 4: Strategy 1 + ML Filter', grid=True, ax=ax)
-    #     plt.legend(loc='upper left');
     plt.savefig(os.path.join('./app/static/data', 'plot_strategy_ml_indicator.png'))
     plt.close()
     # Strategy comparison
@@ -440,85 +438,7 @@ def indicator_ml_strategy(TICKER):
     strategy['signal'] = 0
     for datetime in out_of_sample_with_model.index:
         strategy.at[datetime, 'signal'] = 1
-        
-    
-    start_date = '2010-01-01'
-    end_date = '2022-12-31'
-    #chart_url = utils.visualise_pricechart(strategy, start=start_date, end=end_date, indicators=['EMA'], signal_marker=True)
     chart_url = metric_utils.visualise_pricechart(strategy, start=str(test.index[0].date()), end=str(test.index[-1].date()), indicators=[], signal_marker=True)
 
 
     return [benchmark_performance_stat, strategy_peformance_stat, chart_url]
-
-
-#def visualise_pricechart(df: pd.DataFrame, ticker: str, start: str, end: str, indicators: List[str]):
-def visualise_pricechart():
-    print("Starting Visualise Price Chart")
-    # possibly a dropdown to let user select ticker to visualize
-    df = pd.read_csv('./app/static/data/ohlcv.csv', parse_dates=['date'])
-    df.set_index(['date', 'ticker'], inplace=True)
-    ticker = 'KO'
-    start = "2014-01-01"
-    end = "2024-07-31"
-    indicators = ['SMA', 'EMA', 'RSI', 'ADX', 'Bollinger Band']
-
-
-
-    df_indicators = process_data()
-    data = df_indicators.xs(level='ticker', key=ticker)
-
-    """
-    indicators can be any of ['SMA', 'EMA', 'RSI', 'ADX', 'Bollinger Band']
-    """
-    indicators_to_columns = {
-        'SMA': ['sma_21', 'sma_50'],
-        'EMA': ['ema_21', 'ema_50'],
-        # 'RSI': ['rsi_14'], # show by default
-        # 'ADX': ['adx_14'],
-        'BB': ['bb_5_lb', 'bb_5_ub', 'bb_5_mb'],
-    }
-    columns = ['open', 'high', 'low', 'close', 'rsi_14']
-
-    # select ticker from dataframe
-    data = df.xs(ticker, level='ticker').copy()
-    # using the given date range
-    data = data.loc[start:end]
-
-    # visualisation: 2 rows, 1 column with shared x-axis(time)
-    fig = make_subplots(
-        rows=2, cols=1,
-        shared_xaxes=True,
-        vertical_spacing=0.1,
-        row_heights=[0.75, 0.25],  # Relative heights of the subplots
-        subplot_titles=[
-            f'Price Chart: {ticker}', 
-            'RSI',
-        ]
-    )
-    # default candlestick representation
-    fig.add_trace(go.Candlestick(x=data.index, open=data['open'], high=data['high'], low=data['low'], close=data['close'], name='Candlestick'), row=1, col=1)
-    
-    # see which indicator to add
-    for name in indicators:
-        cols = indicators_to_columns[name]
-        for c in cols:
-            fig.add_trace(go.Scatter(x=data.index, y=data[c], mode='lines', name=f"{name}_{c}", line=dict(color='green', width=1)), row=1, col=1)
-
-    # add RSI by default
-    fig.add_trace(go.Scatter(x=data.index, y=data['rsi_14'], mode='lines', name='RSI', line=dict(color='green', width=2)), row=2, col=1)
-
-    # update layout for the subplots
-    fig.update_layout(
-        title=f'',
-        xaxis2_title='Date',  # Title for the second subplot's x-axis
-        yaxis=dict(title='Price'),
-        width=1200,
-        height=800,
-        yaxis2=dict(title='RSI', range=[0, 100]),  # Set the y-axis range for RSI and ADX
-        xaxis_rangeslider_visible=False,  # Hide range slider
-        legend=dict(x=0.01, y=0.99)
-    )
-    fig.show()
-    plt.switch_backend('Agg')  # Use non-interactive backend
-    plt.savefig(os.path.join('./app/static/data', 'plot_price_chart.png'))
-    plt.close()
