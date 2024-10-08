@@ -49,15 +49,15 @@ def stock_page():
     return render_template('index_stock.html', **render_variables)
 
 
-@main_bp.route('/fetch-stock-data', methods=['POST'])
-def fetch_stock_data():
-    try:
-        csv_filename = fetch_and_process_stock_data()
-        flash(f'Stock data successfully fetched and saved as {csv_filename}', 'success')
-        present_csv_filename = csv_filename
-    except Exception as e:
-        flash(f'Error fetching stock data: {str(e)}', 'danger')
-    return redirect(url_for('main.index'))
+# @main_bp.route('/fetch-stock-data', methods=['POST'])
+# def fetch_stock_data():
+#     try:
+#         csv_filename = fetch_and_process_stock_data()
+#         flash(f'Stock data successfully fetched and saved as {csv_filename}', 'success')
+#         present_csv_filename = csv_filename
+#     except Exception as e:
+#         flash(f'Error fetching stock data: {str(e)}', 'danger')
+#     return redirect(url_for('main.index'))
 
 @main_bp.route('/grid')
 def grid_page():

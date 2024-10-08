@@ -46,14 +46,12 @@ def create_app():
     with app.app_context():
         from .routes import main_bp  # Import the blueprint here, inside the app context
         app.register_blueprint(main_bp)  # Register the blueprint
+        app.register_blueprint(stock_bp)
         db.create_all()  # Create database tables if they do not exist
     # === ===
 
-    # Register blueprints
-    #app.register_blueprint(main_bp)
 
-    app.register_blueprint(main_bp)
-    app.register_blueprint(stock_bp)
+
 
     # Error handlers
     @app.errorhandler(404)

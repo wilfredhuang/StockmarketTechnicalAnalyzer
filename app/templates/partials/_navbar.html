@@ -16,10 +16,10 @@
                     <a class="nav-link {% if request.path == '#contact' %}active{% endif %}" href="#">Contact</a>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Visualization
+                        Stock
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                             <li><a class="dropdown-item" href=" {{ url_for('stock.stock_page') }}"> Stock Page </a></li>
+                             <li><a class="dropdown-item" href=" {{ url_for('stock.stock_page') }}"> Strategy Analysis </a></li>
                         <!-- <li><a class="dropdown-item" href=" {# url_for('example.first_example_page') #}"> First Example </a></li>
                         <li><a class="dropdown-item" href="{# url_for('example.plotly_test_page') #}">Plotly with (Claude)</a></li>
                         <li><a class="dropdown-item" href="{# url_for('example.dash_test_page') #}">Dash with (GPT)</a></li> -->
