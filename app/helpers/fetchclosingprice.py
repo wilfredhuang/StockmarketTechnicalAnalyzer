@@ -21,7 +21,7 @@ def get_closing_price(ticker):
 
     # Loop back through previous days until a closing price is found
     days_back = 1  # Start with yesterday
-    while True:
+    while days_back <= 5:
         previous_date = today - timedelta(days=days_back)
         hist_previous = stock.history(start=previous_date, end=previous_date + timedelta(days=1))
 
@@ -30,48 +30,61 @@ def get_closing_price(ticker):
 
         days_back += 1  # Move to the next day back
 
-        # Optional: Add a safeguard to prevent infinite loops (e.g., after checking a set number of days)
-        if days_back > 5:  # Limit to 30 days back
-            break
-
     return None  # If no closing price is found after the loop, return None
 
-def save_ticker_to_db(ticker, user_id, new_shares, new_price):
+def save_ticker_to_db(ticker, user_id, shares, price):
     # Check if the ticker already exists for this user
     existing_ticker = StockTicker.query.filter_by(ticker=ticker, user_id=user_id).first()
 
-    if existing_ticker:
-        # If the ticker exists, update the shares and price
-        old_shares = existing_ticker.shares
-        old_price = existing_ticker.price
-
-        total_shares = old_shares + int(new_shares)  # Total shares after adding new ones
-
-        # Weighted average price formula
-        weighted_price = ((old_shares * old_price) + (int(new_shares) * float(new_price))) / total_shares
-
-        # Round the weighted price to 2 decimal places
-        weighted_price = round(weighted_price, 2)
-
-        # Update the existing ticker with new values
-        existing_ticker.shares = total_shares
-        existing_ticker.price = weighted_price
-
-
-        flash(f'Updated {ticker} with {new_shares} additional shares. New total: {existing_ticker.shares}', 'info')
-    else:
+    if not existing_ticker:
         # If the ticker does not exist, add it as a new record
-        new_ticker = StockTicker(ticker=ticker, user_id=user_id, shares=int(new_shares), price=float(new_price))
+        new_ticker = StockTicker(ticker=ticker, user_id=user_id, shares=int(shares), price=float(price))
 
         try:
             db.session.add(new_ticker)
-            flash(f'Successfully added new ticker {ticker} with {new_shares} shares at {new_price} per share!', 'success')
+            # Commit the changes
+            db.session.commit()
+            flash(f'Successfully added new ticker {ticker} with {shares} shares at {price} per share!', 'success')
         except Exception as e:
+            # Rollback the session in case of error
             db.session.rollback()
             flash(f'Error adding ticker: {str(e)}', 'danger')
 
-    # Commit the changes
-    db.session.commit()
+    else:
+        flash(f'{ticker} is already in your portfolio!', 'warning')
+
+
+
+def update_ticker_to_db(ticker, user_id, additional_shares, new_price):
+    try:
+        # Check if the ticker already exists for this user
+        existing_ticker = StockTicker.query.filter_by(ticker=ticker, user_id=user_id).first()
+        if existing_ticker:
+            # If the ticker exists, update the shares and price
+            existing_shares = existing_ticker.shares
+            existing_price = existing_ticker.price
+
+            total_shares = existing_shares + int(additional_shares)  # Total shares after adding new ones
+
+            # Weighted average price formula
+            weighted_price = ((existing_shares * existing_price) + (int(additional_shares) * float(new_price))) / total_shares
+
+            # Round the weighted price to 2 decimal places
+            weighted_price = round(weighted_price, 2)
+
+            # Update the existing ticker with new values
+            existing_ticker.shares = total_shares
+            existing_ticker.price = weighted_price
+
+            # Commit the changes
+            db.session.commit()
+
+            flash(f'Updated {ticker} with {additional_shares} additional shares. New total: {existing_ticker.shares}', 'info')
+        else:
+            flash(f'Ticker {ticker} not found for user {user_id}', 'warning')
+    except Exception as e:
+        db.session.rollback()  # Rollback the session if any error occurs
+        flash(f'Error updating {ticker}: {str(e)}', 'error')
 
 def sell_share_to_db(ticker, user_id, sell_shares):
     # Check if the ticker already exists for this user
@@ -86,10 +99,14 @@ def sell_share_to_db(ticker, user_id, sell_shares):
             if total_shares > 0:
                 # Update the existing ticker with new values
                 existing_ticker.shares = total_shares
+                # Commit the changes
+                db.session.commit()
                 flash(f'Sold {sell_shares} of {ticker}. New total: {existing_ticker.shares}', 'info')
             elif total_shares == 0:
                 # Delete the entry if shares reach 0
                 db.session.delete(existing_ticker)
+                # Commit the changes
+                db.session.commit()
                 flash(f'All shares of {ticker} sold. Removed from portfolio.', 'info')
             else:
                 flash(f'Cannot sell {sell_shares} shares. You only own {existing_ticker.shares} shares of {ticker}.', 'warning')
@@ -97,7 +114,30 @@ def sell_share_to_db(ticker, user_id, sell_shares):
         else:
             flash(f"{ticker} is not in you're portfolio", 'info')
     except Exception as e:
+        db.session.rollback()  # Rollback the session on error
         flash(f'Error selling ticker: {str(e)}', 'danger')
 
-    # Commit the changes
-    db.session.commit()
+def calculate_profit_loss(user_id):
+    total_invested = 0
+    total_current_value = 0
+
+    allexisting_tickers = StockTicker.query.filter_by(user_id=user_id).all()
+
+    for ticker in allexisting_tickers:
+        closingprice = get_closing_price(ticker.ticker)
+        shares = ticker.shares # Number of shares owned
+        purchase_price = ticker.price  # Initial purchase price
+
+        # Skip calculation if closing price is None or invalid
+        if closingprice is None:
+            continue  # Skip this ticker if there is no closing price
+
+        # Calculate current value
+        current_value = shares * closingprice
+        total_current_value += current_value
+
+        # Calculate total invested amount
+        total_invested += shares * purchase_price
+
+    total_profit_loss = total_current_value - total_invested
+    return round(total_profit_loss, 2), round(total_invested, 2)
