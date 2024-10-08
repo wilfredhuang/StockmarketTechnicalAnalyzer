@@ -1,5 +1,72 @@
+
+"""
+Module Name: validation_utils.py
+==========================================
+
+Description:
+------------
+This module provides validation functions for a list of stock ticker symbols and date ranges. 
+It uses the yfinance library to check if the given stock tickers are valid by ensuring they have historical data. 
+Additionally, it validates start and end dates to ensure they are in the correct format and logical order.
+
+Functions:
+----------
+- `validate_ticker_list(ticker_list)`: Validates a list of stock ticker symbols.
+- `validate_dates(start_date, end_date)`: Validates the given start and end dates.
+
+validate_ticker_list(ticker_list):
+---------------------------------
+Validates a comma-separated list of stock ticker symbols. It ensures that the list does not exceed 
+30 symbols and checks each ticker symbol's validity using yfinance.
+
+Parameters:
+    ticker_list (str): A comma-separated string of stock ticker symbols.
+
+Returns:
+    tuple: A tuple containing:
+        - (bool): True if all tickers are valid, False otherwise.
+        - (str): A message indicating the validation result. If invalid tickers are found, they are listed.
+
+Example Usage:
+    is_valid, message = validate_ticker_list('AAPL, MSFT, GOOG')
+    if is_valid:
+        print("Ticker list is valid")
+    else:
+        print(f"Validation failed: {message}")
+
+validate_dates(start_date, end_date):
+-----------------------------------
+Validates the given start and end dates. It ensures that the dates are in the correct format ('YYYY-MM-DD'), 
+the start date is not later than the end date, and both dates are not in the future.
+
+Parameters:
+    start_date (str): The start date in 'YYYY-MM-DD' format.
+    end_date (str): The end date in 'YYYY-MM-DD' format.
+
+Returns:
+    tuple: A tuple containing:
+        - (bool): True if the dates are valid, False otherwise.
+        - (str): A message indicating the validation result.
+
+Example Usage:
+    is_valid, message = validate_dates('2023-01-01', '2023-12-31')
+    if is_valid:
+        print("Dates are valid")
+    else:
+        print(f"Validation failed: {message}")
+
+Dependencies:
+-------------
+- yfinance: Used to validate ticker symbols by checking their historical data.
+- datetime: Used to parse and validate dates.
+"""
+
+
 import yfinance as yf
 from datetime import datetime
+
+
+
 
 def validate_ticker_list(ticker_list):
     # Split ticker_list by commas and strip extra spaces

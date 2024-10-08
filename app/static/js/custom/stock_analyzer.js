@@ -1,4 +1,75 @@
 document.addEventListener("DOMContentLoaded", function () {
+  loadBootstrapElements();
+  loadQuickFillButtons();
+  loadFetchDataFeature();
+  loadProcessDataFeature();
+});
+
+// === Utility Functions ===
+function showFlashMessage(category, message) {
+  // Function to dynamically add a flash message
+  const flashMessageDiv = document.createElement("div");
+  flashMessageDiv.className = `alert alert-${category} alert-dismissible fade show mt-2`;
+  flashMessageDiv.role = "alert";
+  flashMessageDiv.innerHTML = `
+${message}
+<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+`;
+
+  // Add the new flash message to the #flash-messages div
+  document.getElementById("flash-messages").appendChild(flashMessageDiv);
+
+  // Optionally, auto-dismiss the alert after a few seconds
+  setTimeout(function () {
+    var bsAlert = new bootstrap.Alert(flashMessageDiv);
+    bsAlert.close();
+  }, 5000); // Dismiss after 5 seconds
+}
+
+// === Generic function template to send requests with fetch ===
+function sendRequest(url, method, data) {
+  return fetch(url, {
+    method: method,
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  })
+    .then((response) => {
+      if (!response.ok) {
+        // Handle HTTP errors (e.g., 404, 500)
+        throw new Error("Network response was not ok");
+      }
+      const contentType = response.headers.get("content-type");
+      // Check if response contains JSON and parse if so
+      if (contentType && contentType.includes("application/json")) {
+        return response.json();
+      } else if (response.status !== 204) {
+        // If not a 204 (No Content), return as text
+        return response.text();
+      } else {
+        return null; // Handle empty response (e.g., 204)
+      }
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+      alert("An error occurred. Please try again.");
+    });
+}
+
+// Handle 'Quick Fill' button click
+function handleQuickFill(ticker_data, start_date, end_date) {
+  // Example logic for quick fill
+  const tickerInput = document.getElementById("ticker");
+  const startDateInput = document.getElementById("start");
+  const endDateInput = document.getElementById("end");
+  tickerInput.value = ticker_data;
+  startDateInput.value = start_date;
+  endDateInput.value = end_date;
+}
+
+// === Load Bootstrap Elements ===
+function loadBootstrapElements() {
   // Initialize all Bootstrap tooltips
   var tooltipTriggerList = [].slice.call(
     document.querySelectorAll('[data-bs-toggle="tooltip"]')
@@ -6,125 +77,74 @@ document.addEventListener("DOMContentLoaded", function () {
   var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
     return new bootstrap.Tooltip(tooltipTriggerEl);
   });
+}
 
-  // Function to dynamically add a flash message
-  function showFlashMessage(category, message) {
-    const flashMessageDiv = document.createElement("div");
-    flashMessageDiv.className = `alert alert-${category} alert-dismissible fade show mt-2`;
-    flashMessageDiv.role = "alert";
-    flashMessageDiv.innerHTML = `
-    ${message}
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  `;
-
-    // Add the new flash message to the #flash-messages div
-    document.getElementById("flash-messages").appendChild(flashMessageDiv);
-
-    // Optionally, auto-dismiss the alert after a few seconds
-    setTimeout(function () {
-      var bsAlert = new bootstrap.Alert(flashMessageDiv);
-      bsAlert.close();
-    }, 5000); // Dismiss after 5 seconds
-  }
-
-  // Handle 'Quick Fill' button click
-  function handleQuickFill(data) {
-    // Example logic for quick fill
-    const tickerInput = document.getElementById("ticker");
-    tickerInput.value = data; // Example stock ticker
-  }
-
+// === Minor Event Listeners ===
+function loadQuickFillButtons() {
   document
     .getElementById("valid_fetchDataQuickFillBtn")
     .addEventListener("click", function () {
-      document.getElementById("start").value = "2014-01-01";
-      document.getElementById("end").value = "2024-01-01";
       handleQuickFill(
-        "KO, PEP, WMT, SBUX, MCD, AAL, DAL, F, VZ, T, DIS, BAC, JPM, MA, V, ORCL, AMD, NVDA, AAPL, MSFT"
+        "KO, PEP, WMT, SBUX, MCD, AAL, DAL, F, VZ, T, DIS, BAC, JPM, MA, V, ORCL, AMD, NVDA, AAPL, MSFT",
+        "2014-01-01",
+        "2024-07-31"
       );
     });
 
   document
     .getElementById("invalidnaming_fetchDataQuickFillBtn")
     .addEventListener("click", function () {
-      document.getElementById("start").value = "2014-01-01";
-      document.getElementById("end").value = "2013-07-31";
       handleQuickFill(
-        "KO1, PEP, WMT, SBUX, MCD, AAL, DAL, F, VZ, T, DIS, BAC, JPM, MA, V, ORCL, AMD, NVDA, AAPL, MSFT2"
+        "KO1, PEP, WMT, SBUX, MCD, AAL, DAL, F, VZ, T, DIS, BAC, JPM, MA, V, ORCL, AMD, NVDA, AAPL, MSFT2",
+        "2014-01-01",
+        "2024-01-01"
       );
     });
 
   document
     .getElementById("invalidlength_fetchDataQuickFillBtn")
     .addEventListener("click", function () {
-      document.getElementById("start").value = "2014-01-01";
-      document.getElementById("end").value = "2013-07-31";
       handleQuickFill(
-        "KO, PEP, WMT, SBUX, MCD, AAL, DAL, F, VZ, T, DIS, BAC, JPM, MA, V, ORCL, AMD, NVDA, AAPL, MSFT, GOOGL, AMZN, NFLX, TSLA, META, INTC, PYPL, CRM, IBM, CSCO, HD"
+        "KO, PEP, WMT, SBUX, MCD, AAL, DAL, F, VZ, T, DIS, BAC, JPM, MA, V, ORCL, AMD, NVDA, AAPL, MSFT, GOOGL, AMZN, NFLX, TSLA, META, INTC, PYPL, CRM, IBM, CSCO, HD",
+        "2014-01-01",
+        "2013-07-31"
       );
     });
+}
 
-  // === Generic function template to send requests with fetch ===
-  function sendRequest(url, method, data) {
-    return fetch(url, {
-      method: method,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          // Handle HTTP errors (e.g., 404, 500)
-          throw new Error("Network response was not ok");
-        }
-        const contentType = response.headers.get("content-type");
-        // Check if response contains JSON and parse if so
-        if (contentType && contentType.includes("application/json")) {
-          return response.json();
-        } else if (response.status !== 204) {
-          // If not a 204 (No Content), return as text
-          return response.text();
-        } else {
-          return null; // Handle empty response (e.g., 204)
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        alert("An error occurred. Please try again.");
-      });
-  }
+// === Main Event Listeners ===
+// function loadTestButton() {
+//   // Sandbox Button for testing functions purpose only
+//   document
+//     .getElementById("testing-btn")
+//     .addEventListener("click", function () {
+//       const testingBtn = document.getElementById("testing-btn");
+//       // --Send Request--
+//       sendRequest("/sandbox-test-request", "POST", {
+//         data: [1, 3, 5, 7, 9],
+//       })
+//         // --Response Data Handling from server--
+//         .then((data) => {
+//           // Clear existing flash messages
+//           document.getElementById("flash-messages").innerHTML = "";
+//           if (data.success) {
+//             // If successful, show a success message
+//             showFlashMessage("success", data.message);
+//             //showFlashMessage('success', 'Your changes have been saved successfully!');
+//           } else {
+//             // If validation failed, show error message
+//             showFlashMessage("danger", data.errors.foobar);
+//           }
+//         })
 
-  // Main Features Button Handling
-
-  // Sandbox Button for testing functions purpose only
-  document.getElementById("testing-btn").addEventListener("click", function () {
-    const testingBtn = document.getElementById("testing-btn");
-    // --Send Request--
-    sendRequest("/sandbox-test-request", "POST", {
-      data: [1, 3, 5, 7, 9],
-    })
-      // --Response Data Handling from server--
-      .then((data) => {
-        // Clear existing flash messages
-        document.getElementById("flash-messages").innerHTML = "";
-        if (data.success) {
-          // If successful, show a success message
-          showFlashMessage("success", data.message);
-          //showFlashMessage('success', 'Your changes have been saved successfully!');
-        } else {
-          // If validation failed, show error message
-          showFlashMessage("danger", data.errors.foobar);
-        }
-      })
-
-      // --Error Handling--
-      .catch((error) => {
-        console.error("Error:", error);
-        showFlashMessage("danger", "An error occurred.");
-      });
-  });
-
+//         // --Error Handling--
+//         .catch((error) => {
+//           console.error("Error:", error);
+//           showFlashMessage("danger", "An error occurred.");
+//         });
+//     });
+// }
+function loadFetchDataFeature() {
   // Fetch Data to CSV Feature
   document
     .getElementById("fetch-data-btn")
@@ -136,9 +156,9 @@ document.addEventListener("DOMContentLoaded", function () {
       fetchDataBtn.classList.add("loading-btn");
       // Change button text to 'Loading...' and add a spinner
       fetchDataBtn.innerHTML = `
-                <div class="spinner"></div>
-                Loading...
-            `;
+            <div class="spinner"></div>
+            Loading...
+        `;
 
       var data = true;
       const tickerInput = document.getElementById("ticker").value;
@@ -174,6 +194,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 option.value = ticker;
                 tickerDropDownBox.appendChild(option);
               });
+
+              const processDataBtn = (document.getElementById(
+                "process-data-btn"
+              ).disabled = false);
             } else {
               //alert("No content received.");
               const noOptionsOption = document.createElement("option");
@@ -203,13 +227,15 @@ document.addEventListener("DOMContentLoaded", function () {
         fetchDataBtn.innerHTML = "Fetch Data";
       }
     });
-
+}
+function loadProcessDataFeature() {
   // === Process Data Feature ===
   document
     .getElementById("process-data-btn")
     .addEventListener("click", function () {
       const processDataBtn = document.getElementById("process-data-btn");
       const selectedStrategy = document.getElementById("strategy-select").value;
+      const selectedTicker = document.getElementById("ticker-select").value;
 
       // Disable the button and show loading state
       processDataBtn.disabled = true;
@@ -217,12 +243,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // Change button text to 'Loading...' and add a spinner
       processDataBtn.innerHTML = `
-                <div class="spinner"></div>
-                Loading...
-            `;
+          <div class="spinner"></div>
+          Loading...
+      `;
 
       sendRequest("/process-stock-data", "POST", {
         strategy: selectedStrategy,
+        ticker: selectedTicker,
       })
         .then((data) => {
           if (data && data.image_url) {
@@ -231,6 +258,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const graphDiv = document.querySelector(".show-graph");
             graphDiv.innerHTML = `<img src="${data.image_url}" alt="Strategy Performance Graph">`;
+
+            const graphDivSecond = document.querySelector(".show-graph-second");
+            graphDivSecond.innerHTML = `<img src="${data.image_url_second}" alt="Strategy Performance Comparison Graph">`;
 
             const nums = data.nums;
             const strat_perf_data = data.strat_perf_data;
@@ -311,10 +341,14 @@ document.addEventListener("DOMContentLoaded", function () {
               benchmark_data.profit_factor;
             document.getElementById(
               "bm_average_profit_display"
-            ).textContent = `${benchmark_data.average_profit}%`;
+            ).textContent = `${(benchmark_data.average_profit * 100).toFixed(
+              2
+            )}%`;
             document.getElementById(
               "bm_average_loss_display"
-            ).textContent = `${benchmark_data.average_loss_display}%`;
+            ).textContent = `${(benchmark_data.average_loss_display * 100).toFixed(
+              2
+            )}%`;
 
             // Update Benchmark Up/Down Days
             const bmUpDaysProgress = document.getElementById(
@@ -359,12 +393,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // Check if the chart already exists
             if (document.getElementById("chart-container").data) {
+              document.getElementById("chart-msg").innerHTML = "";
               // Update existing chart
               Plotly.react("chart-container", figData.data, figData.layout);
             } else {
+              document.getElementById("chart-msg").innerHTML = "";
               // Create new chart
               Plotly.newPlot("chart-container", figData.data, figData.layout);
             }
+
+            // Re-enable the button and revert its text and styles
+            processDataBtn.disabled = false;
+            processDataBtn.classList.remove("loading-btn");
+            processDataBtn.innerHTML = "Process Data";
 
             //
           } else {
@@ -450,19 +491,23 @@ document.addEventListener("DOMContentLoaded", function () {
               noDataMessage;
             document.getElementById("bm_down_days_display").textContent =
               noDataMessage;
+
+            // Price Chart
+            document.getElementById("chart-msg").innerHTML = "No data found";
+
             alert("No content received.");
+
+            // Disable the button and revert its text and styles
+            processDataBtn.disabled = true;
+            processDataBtn.classList.remove("loading-btn");
+            processDataBtn.innerHTML = "Process Data";
           }
         })
         .catch((error) => {
           console.error("Error:", error);
         })
-        .finally(() => {
-          // Re-enable the button and revert its text and styles
-          processDataBtn.disabled = false;
-          processDataBtn.classList.remove("loading-btn");
-          processDataBtn.innerHTML = "Process Data";
-        });
+        .finally(() => {console.log("Finished")});
 
       console.log("Clicked 2");
     });
-});
+}

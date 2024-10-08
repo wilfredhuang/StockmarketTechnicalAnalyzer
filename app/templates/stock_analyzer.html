@@ -1,34 +1,7 @@
 {% extends "layouts/layout.html" %} {% block title %}Home - Flask Starter App
-{{title}}{% endblock %} {% block extra_css %}
-<style>
-  /* Style for the button when loading */
-  .loading-btn {
-    background-color: grey;
-    color: white;
-  }
-
-  /* Spinner style */
-  .spinner {
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #3498db;
-    border-radius: 50%;
-    width: 16px;
-    height: 16px;
-    animation: spin 2s linear infinite;
-    display: inline-block;
-    margin-right: 8px;
-  }
-
-  @keyframes spin {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
-  }
-</style>
-
+{{title}}{% endblock %} 
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/custom/stock_analyzer.css') }}"> <!-- Include external CSS -->
 {% endblock %} {% block content %}
 <div class="container mt-4"></div>
 <!-- Flash Messages Container (the div is always rendered, even if empty) -->
@@ -93,7 +66,8 @@
   >
     <br />
 
-    <div class="row mb-3">
+    <!-- Javascript Function Tester -->
+    <!-- <div class="row mb-3">
       <div class="col-md-6">
         <p> Javascript Function Tester </p>
       </div>
@@ -102,17 +76,11 @@
           Test!
         </button>
       </div>
-    </div>
+    </div> -->
 
     <!-- Input Form for Fetch Data to CSV-->
-        <!-- <div class="mb-3">
-          <label for="ticker" class="form-label">Enter Ticker</label>
-          <button type="button" class="btn btn-link p-0" id="quickFillBtn" >Quick Fill</button>
-          <input type="text" class="form-control" id="ticker" name="ticker" required />
-        </div> -->
         <div class="mb-3">
           <div class="d-flex align-items-center mb-2">
-            <!-- <label for="ticker" class="form-label mb-0 me-2">Enter Ticker</label> -->
             <label for="ticker" class="form-label mb-0 me-2" 
            data-bs-toggle="tooltip" 
            data-bs-placement="top" 
@@ -137,7 +105,7 @@
     <!-- === -->
     <div class="row mb-3">
       <div class="col-md-6">
-        <p>Fetch Data</p>
+        <p>Fetch Data into .csv</p>
       </div>
       <div class="col-md-6">
         <button id="fetch-data-btn" class="btn btn-success w-100">
@@ -146,12 +114,7 @@
       </div>
     </div>
 
-    
-    <!-- <div class="mb-3">
-      <label for="formFile" class="form-label">Upload Your File</label>
-      <input class="form-control" type="file" id="formFile">
-    </div>
-    <button type="button" class="btn btn-primary" onclick="submitFilePath()">Submit</button> -->
+
 
     <div class="row mb-3">
       <div class="col-md-6">
@@ -160,7 +123,7 @@
     </div>
     <div class="row mb-3">
       <div class="col-md-6">
-        <p>Select Ticker</p>
+        <p>Select Ticker from data set</p>
       </div>
       <div class="col-md-6">
         <select id="ticker-select" class="form-control">
@@ -188,7 +151,7 @@
       <div class="col-md-6"></div>
 
       <div class="col-md-6">
-        <button id="process-data-btn" class="btn btn-success w-100">
+        <button id="process-data-btn" class="btn btn-success w-100" disabled>
           Process Data
         </button>
       </div>
@@ -203,6 +166,7 @@
   >
     <br>
     <div class="show-graph"></div>
+    <div class="show-graph-second"></div>
     <!-- Trading Statistics (Strategy Performance) -->
     <h1 class="text-center mb-4">Trading Statistics (Strategy Performance)</h1>
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
@@ -402,7 +366,7 @@
               <li
                 class="list-group-item d-flex justify-content-between align-items-center"
               >
-                Total Trades
+                Trading Days
                 <span
                   class="badge bg-info rounded-pill"
                   id="bm_total_trades_display"
@@ -508,10 +472,10 @@
     aria-labelledby="price-tab"
   >
 
-
-          <!-- Placeholder to load the chart -->
+          <div id="chart-msg">
+            <p> No data found  </p>
+          </div>
           <div id="chart-container">
-            <!-- The iframe will be dynamically added here -->
         </div>
         
     </div>
@@ -520,5 +484,5 @@
   </div>
 </div>
 {% endblock %} {% block extra_js %}
-<script src="{{url_for('static', filename='js/custom/new_stonk.js') }}"></script>
+<script src="{{url_for('static', filename='js/custom/stock_analyzer.js') }}"></script>
 {% endblock %}

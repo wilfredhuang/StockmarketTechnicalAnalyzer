@@ -1,3 +1,89 @@
+"""
+Module Name: metric_utils.py
+=============================================
+
+Description:
+------------
+This module contains functions for analyzing and visualizing stock performance. It provides utilities 
+for calculating benchmark buy-and-hold performance, strategy performance metrics, and generating 
+interactive price charts using Plotly.
+
+Functions:
+----------
+1. `benchmark_performance(data: pd.DataFrame, start: str, end: str) -> dict`:
+    Computes performance metrics for a buy-and-hold strategy over a given date range.
+
+2. `strategy_performance(data: pd.DataFrame) -> dict`:
+    Calculates strategy-specific performance metrics based on trade signals.
+
+3. `visualise_pricechart(df: pd.DataFrame, start: Optional[str], end: Optional[str], 
+   ticker: Optional[str], indicators: List[str], signal_marker: bool) -> go.Figure`:
+    Generates an interactive price chart with optional indicators and trade signals.
+
+benchmark_performance(data: pd.DataFrame, start: str, end: str) -> dict:
+-------------------------------------------------------------------------
+Computes various benchmark performance metrics for a buy-and-hold strategy over a specified date range, 
+such as cumulative returns, annualized volatility, maximum drawdown, and profit factor.
+
+Parameters:
+    data (pd.DataFrame): The stock price data with 'close' prices and a DateTime index.
+    start (str): The start date for the analysis (format: 'YYYY-MM-DD').
+    end (str): The end date for the analysis (format: 'YYYY-MM-DD').
+
+Returns:
+    dict: A dictionary containing the calculated performance metrics like total return, 
+    annualized volatility, maximum drawdown, profit factor, etc.
+
+Example Usage:
+    performance_dict = benchmark_performance(stock_data, '2023-01-01', '2023-12-31')
+
+strategy_performance(data: pd.DataFrame) -> dict:
+-------------------------------------------------
+Computes performance metrics for a trading strategy based on trade signals and returns. 
+Includes statistics like total trades, profit factor, average profit/loss, and maximum drawdown.
+
+Parameters:
+    data (pd.DataFrame): The strategy data, where 'signal' indicates trades (1 for buy, -1 for sell), 
+    and 'returns' contains the percentage returns.
+
+Returns:
+    dict: A dictionary with performance metrics, including total trades, profit factor, 
+    average profit, average loss, maximum drawdown, etc.
+
+Example Usage:
+    strategy_perf_dict = strategy_performance(strategy_data)
+
+visualise_pricechart(df: pd.DataFrame, start: Optional[str], end: Optional[str], ticker: Optional[str], 
+indicators: List[str], signal_marker: bool) -> go.Figure:
+-------------------------------------------------------------------------------------------------
+Generates an interactive price chart with candlestick representation and optional technical indicators 
+(e.g., SMA, EMA, Bollinger Bands). Optionally, trade signals can be displayed on the chart.
+
+Parameters:
+    df (pd.DataFrame): The stock data with columns for 'open', 'high', 'low', 'close', 'rsi_14', etc.
+    start (Optional[str]): The start date for the chart (format: 'YYYY-MM-DD').
+    end (Optional[str]): The end date for the chart (format: 'YYYY-MM-DD').
+    ticker (Optional[str]): The ticker symbol of the stock (if multiple tickers exist in the DataFrame).
+    indicators (List[str]): A list of technical indicators to display (options: ['SMA', 'EMA', 'RSI', 'BB']).
+    signal_marker (bool): If True, displays markers where trades were made on the price chart.
+
+Returns:
+    go.Figure: A Plotly Figure object with the generated price chart and optional indicators.
+
+Example Usage:
+    fig = visualise_pricechart(stock_data, '2023-01-01', '2023-12-31', 'AAPL', ['SMA', 'EMA'], signal_marker=True)
+    fig.show()
+
+Dependencies:
+-------------
+- pandas: Used for data manipulation and indexing.
+- numpy: For mathematical operations like standard deviation and cumulative returns.
+- plotly: Used for generating interactive charts and figures.
+- typing: Provides type hints for optional parameters and lists.
+"""
+
+
+
 from typing import List, Optional
 import numpy as np
 import pandas as pd
@@ -75,20 +161,6 @@ def benchmark_performance(data: pd.DataFrame, start: str, end: str):
     }
 
     print(f"Benchmark performance dict = {benchmark_performance_dict}")
-    # strat_performance_dict = {
-    #     "trades":{trades}, 
-    #     "up_days":{up}, 
-    #     "up_days_percentage":{up_days_percentage}, 
-    #     "down_days": {down},
-    #     "down_days_percentage":down_days_percentage,
-    #     "total_return": total_return_display,
-    #     "annualised_volatility": annualised_volatility_display,
-    #     "maximum_drawdown": maximum_drawdown_display,
-    #     "profit_factor":profit_factor_display,
-    #     "average_profit":average_profit_display,
-    #     "average_loss_display":average_loss_display
-    # }
-
     return benchmark_performance_dict
 
 def strategy_peformance(data: pd.DataFrame):

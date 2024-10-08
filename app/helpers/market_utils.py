@@ -1,3 +1,55 @@
+"""
+Module Name: market_utils.py
+============================
+
+Description:
+------------
+This module provides functionality for fetching, processing, and analyzing stock market data. 
+It uses various technical indicators to support different trading strategies and visualizations. 
+The module includes functions to retrieve historical stock data, add technical indicators, and apply trading strategies such as Exponential Moving Average (EMA) crossover, EMA with Relative Strength Index (RSI), RSI with Average Directional Index (ADX), and a Machine Learning-enhanced indicator strategy.
+
+Functions:
+----------
+1. `fetch_stock_data(TICKERS, START_DATE, END_DATE) -> None`:
+    Fetches historical stock data for the given tickers and saves it to CSV files for further processing.
+
+2. `process_data() -> pd.DataFrame`:
+    Processes the raw data to generate technical indicators such as moving averages, RSI, ADX, and Bollinger Bands.
+
+3. `construct_indicators(group: pd.DataFrame) -> pd.DataFrame`:
+    Constructs various technical indicators for the given data group, including simple moving averages, exponential moving averages, RSI, ADX, and Bollinger Bands.
+
+4. `log_returns(group: pd.DataFrame, periods: List[int]) -> pd.DataFrame`:
+    Calculates daily log returns for the given group.
+
+5. `ema_crossover_strategy(TICKER: str) -> List`:
+    Implements an EMA crossover strategy where a signal is generated when the 21-period EMA crosses above the 50-period EMA.
+
+6. `ema_crossover_rsi_strategy(TICKER: str) -> List`:
+    Implements an EMA crossover with RSI filter strategy. An additional condition is included where the RSI must be below 50 to generate a buy signal.
+
+7. `rsi_adx_strategy(TICKER: str) -> List`:
+    Implements a strategy combining RSI and ADX indicators. A signal is generated when RSI is below 45 and ADX is above 30.
+
+8. `indicator_ml_strategy(TICKER: str) -> List`:
+    Uses a machine learning model (RandomForestClassifier) to enhance the EMA crossover strategy by filtering signals based on additional indicator features.
+
+9. `visualise_pricechart() -> None`:
+    Generates a price chart with optional indicators for a selected ticker.
+
+Dependencies:
+-------------
+- numpy: For mathematical calculations.
+- pandas: For data manipulation and time-series analysis.
+- matplotlib and seaborn: For visualizing strategy performance.
+- yfinance: For fetching stock data.
+- pandas_ta: For calculating technical indicators.
+- plotly: For generating interactive price charts.
+- sklearn: For implementing machine learning-based filtering of trading signals.
+"""
+
+
+
 # === Libraries ===
 import numpy as np
 import pandas as pd
@@ -19,9 +71,9 @@ import os
 sys.path.append(os.path.abspath('../app/helpers'))
 
 # Import utils and reload when necessary
-from . import utils
+from . import metric_utils
 import importlib
-importlib.reload(utils)
+importlib.reload(metric_utils)
 
 # Wilfred's Portion
 
@@ -45,7 +97,7 @@ def fetch_stock_data(TICKERS, START_DATE, END_DATE):
     spy.set_index('date', inplace=True)
 
     # just a performance statistic of buying and holding the S&P 500 for the entire period
-    utils.benchmark_performance(spy, START_DATE, END_DATE)
+    metric_utils.benchmark_performance(spy, START_DATE, END_DATE)
     # === Data Cleaning ===
     df.info()
     df.isnull().sum()
@@ -64,6 +116,7 @@ def process_data():
     print(f"Hello World {df_indicators}")
     return df_indicators
 
+# === Calculate Indicators ===
 def contruct_indicators(group):
     # indicator: Simple Moving Averages
     group['sma_5'] = ta.sma(group['close'], length=5)
@@ -136,11 +189,9 @@ def log_returns(group, periods=[1]):
 # === Data Analysis / Visualisation ===
 # Strategy One
 # def ema_crossover_strategy(TICKER,DEFAULT_COLUMNS,K):
-def ema_crossover_strategy():
-    TICKER='KO'
+def ema_crossover_strategy(TICKER):
     df_indicators = process_data()
     data = df_indicators.xs(level='ticker', key=TICKER)
-
     DEFAULT_COLUMNS = ['open', 'high', 'low', 'close']
     # required indicators
     strategy = data[DEFAULT_COLUMNS + ['rsi_14', 'log_return','ema_21', 'ema_50']].dropna().copy()
@@ -161,8 +212,8 @@ def ema_crossover_strategy():
     # print the performance statistic of the strategy and the buy-and-hold
     start_date = '2010-01-01'
     end_date = '2022-12-31'
-    benchmark_performance_stat = utils.benchmark_performance(data, start_date, end_date)
-    strategy_performance_stat = utils.strategy_peformance(strategy.loc[start_date:end_date])
+    benchmark_performance_stat = metric_utils.benchmark_performance(data, start_date, end_date)
+    strategy_performance_stat = metric_utils.strategy_peformance(strategy.loc[start_date:end_date])
     
     # visualize the performance of the strategy
     plt.switch_backend('Agg')  # Use non-interactive backend
@@ -177,20 +228,17 @@ def ema_crossover_strategy():
     # Price Chart
     start_date = '2010-01-01'
     end_date = '2022-12-31'
-    price_chart = utils.visualise_pricechart(strategy, start=start_date, end=end_date, indicators=['EMA'], signal_marker=True)
+    price_chart = metric_utils.visualise_pricechart(strategy, start=start_date, end=end_date, indicators=['EMA'], signal_marker=True)
 
     return [benchmark_performance_stat, strategy_performance_stat, price_chart]
 
 # Strategy Two
 # def ema_crossover_strategy(TICKER,DEFAULT_COLUMNS,K, RSI_K):
-def ema_crossover_rsi_strategy():
-    # possibly a dropdown to let user select ticker to visualize
-    TICKER = 'KO'
+def ema_crossover_rsi_strategy(TICKER):
     df_indicators = process_data()
     data = df_indicators.xs(level='ticker', key=TICKER)
     
     DEFAULT_COLUMNS = ['open', 'high', 'low', 'close']
-    #
     # required indicators
     strategy = data[DEFAULT_COLUMNS + 
         [
@@ -217,8 +265,8 @@ def ema_crossover_rsi_strategy():
     # print the performance statistic of the strategy and the buy-and-hold
     start_date = '2010-01-01'
     end_date = '2022-12-31'
-    benchmark_performance_stat = utils.benchmark_performance(data, start_date, end_date)
-    strategy_performance_stat = utils.strategy_peformance(strategy.loc[start_date:end_date])
+    benchmark_performance_stat = metric_utils.benchmark_performance(data, start_date, end_date)
+    strategy_performance_stat = metric_utils.strategy_peformance(strategy.loc[start_date:end_date])
     # visualize the performance of the strategy
     plt.switch_backend('Agg')  # Use non-interactive backend
     ax = (strategy.loc[start_date:end_date].returns + 1).cumprod().plot(kind='line', label='EMA Crossover + RSI', title='Strategy Performances', ylabel='Total Return (multiples)', figsize=(10,6))
@@ -232,20 +280,17 @@ def ema_crossover_rsi_strategy():
     # Price Chart
     start_date = '2010-01-01'
     end_date = '2022-12-31'
-    price_chart = utils.visualise_pricechart(strategy, start=start_date, end=end_date, indicators=['EMA'], signal_marker=True)
+    price_chart = metric_utils.visualise_pricechart(strategy, start=start_date, end=end_date, indicators=['EMA'], signal_marker=True)
 
     return [benchmark_performance_stat, strategy_performance_stat, price_chart]
 
 
     
 # def rsi_adx_strategy(TICKER,DEFAULT_COLUMNS,K, RSI_K, ADX_K)):
-def rsi_adx_strategy():
-    # possibly a dropdown to let user select ticker to visualize
-    TICKER = 'KO'
+def rsi_adx_strategy(TICKER):
     df_indicators = process_data()
     data = df_indicators.xs(level='ticker', key=TICKER)
     DEFAULT_COLUMNS = ['open', 'high', 'low', 'close']
-    #
     # required indicators
     strategy = data[DEFAULT_COLUMNS + 
         [
@@ -275,8 +320,8 @@ def rsi_adx_strategy():
     # print the performance statistic of the strategy and the buy-and-hold
     start_date = '2010-01-01'
     end_date = '2022-12-31'
-    benchmark_performance_stat = utils.benchmark_performance(data, start_date, end_date)
-    strategy_performance_stat = utils.strategy_peformance(strategy.loc[start_date:end_date])
+    benchmark_performance_stat = metric_utils.benchmark_performance(data, start_date, end_date)
+    strategy_performance_stat = metric_utils.strategy_peformance(strategy.loc[start_date:end_date])
     # visualize the performance of the strategy
     plt.switch_backend('Agg')  # Use non-interactive backend
     ax = (strategy.loc[start_date:end_date].returns + 1).cumprod().plot(kind='line', label='EMA Crossover', title='Strategy Performances', ylabel='Total Return (multiples)', figsize=(10,6))
@@ -290,18 +335,16 @@ def rsi_adx_strategy():
     # Price Chart
     start_date = '2010-01-01'
     end_date = '2022-12-31'
-    chart_url = utils.visualise_pricechart(strategy, start=start_date, end=end_date, indicators=['EMA'], signal_marker=True)
+    chart_url = metric_utils.visualise_pricechart(strategy, start=start_date, end=end_date, indicators=['EMA'], signal_marker=True)
 
     return [benchmark_performance_stat, strategy_performance_stat, chart_url]
 
+
+# === Analysis + Prediction Strategy ===
 # def indicator_ml_strategy(TICKER, K, RSI_K, TRAIN_END, TEST_PERIOD_WEEKS, TEST_START, FEATURES):
-def indicator_ml_strategy():
-    # possibly a dropdown to let user select ticker to visualize
-    TICKER = 'KO'
+def indicator_ml_strategy(TICKER):
     df_indicators = process_data()
     data = df_indicators.xs(level='ticker', key=TICKER)
-    #
-    # create features (independent variables) and target (dependent variable)
     strategy = data[
         [
             'close', 'log_return',
@@ -347,7 +390,7 @@ def indicator_ml_strategy():
     model = RandomForestClassifier() # instantiate the model 
     model.fit(train_X, train_y) # this api call trains the model
 
-   # evaluate the model accuracy
+    # evaluate the model accuracy
     test_X, test_y = test[FEATURES], test['target']
     y_pred = model.predict(test_X)
     acc = accuracy_score(test_y, y_pred)
@@ -362,12 +405,17 @@ def indicator_ml_strategy():
     out_of_sample_with_model = strategy[strategy.signal == 1].loc[TEST_START:].copy()
     out_of_sample_with_model['signal'] = y_pred
     out_of_sample_with_model = out_of_sample_with_model[out_of_sample_with_model.signal == 1]
-    strategy_peformance_stat = utils.strategy_peformance(out_of_sample_with_model)
+    strategy_peformance_stat = metric_utils.strategy_peformance(out_of_sample_with_model)
+
+    
+    # without using model
+    out_of_sample_without_model = strategy[strategy.signal == 1].loc[TEST_START:]
+
 
     spy = pd.read_csv('./app/static/data/spy.csv', parse_dates=['date'])
     spy.set_index('date', inplace=True)
 
-    benchmark_performance_stat = utils.benchmark_performance(spy, '2024-01-01', '2024-07-20') # and we kind of beat the index as well
+    benchmark_performance_stat = metric_utils.benchmark_performance(spy, '2024-01-01', '2024-07-20') # and we kind of beat the index as well
     # visualize the performance of the strategy using model - notice the fewer sharp drops throughout the period
     plt.switch_backend('Agg')  # Use non-interactive backend
     (out_of_sample_with_model.returns + 1).cumprod().plot(kind='line', grid=True, title='Strategy Performance', figsize=(10,6));
@@ -379,8 +427,28 @@ def indicator_ml_strategy():
     #     plt.legend(loc='upper left');
     plt.savefig(os.path.join('./app/static/data', 'plot_strategy_ml_indicator.png'))
     plt.close()
+    # Strategy comparison
+    ax = (out_of_sample_without_model.returns + 1).cumprod().plot(kind='line', label='Strategy 1: EMA Crossover', title='Strategy Performances', ylabel='Total Return (multiples)', figsize=(10,6))
+    (out_of_sample_with_model.returns + 1).cumprod().plot(kind='line', label='Strategy 4: Strategy 1 + ML Filter', grid=True, ax=ax)
+    # ax.xaxis.set_major_locator(mdates.YearLocator())  # set ticks for each year
+    # ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y')) # format of the year label
+    plt.legend(loc='upper left');
+    plt.savefig(os.path.join('./app/static/data', 'plot_strategy_ml_indicator_comparison.png'))
+    plt.close()
 
-    return [benchmark_performance_stat, strategy_peformance_stat]
+     # Price Chart
+    strategy['signal'] = 0
+    for datetime in out_of_sample_with_model.index:
+        strategy.at[datetime, 'signal'] = 1
+        
+    
+    start_date = '2010-01-01'
+    end_date = '2022-12-31'
+    #chart_url = utils.visualise_pricechart(strategy, start=start_date, end=end_date, indicators=['EMA'], signal_marker=True)
+    chart_url = metric_utils.visualise_pricechart(strategy, start=str(test.index[0].date()), end=str(test.index[-1].date()), indicators=[], signal_marker=True)
+
+
+    return [benchmark_performance_stat, strategy_peformance_stat, chart_url]
 
 
 #def visualise_pricechart(df: pd.DataFrame, ticker: str, start: str, end: str, indicators: List[str]):
