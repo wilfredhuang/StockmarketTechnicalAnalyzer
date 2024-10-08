@@ -24,13 +24,15 @@ function deleteTicker(tickerId) {
 }
 
 // Function to toggle the display of the ticker container
-function toggleTickerDisplay() {
+function toggleNewTickerDisplay() {
     const tickerContainer = document.getElementById('tickerContainer');
+    const updatetickerContainer = document.getElementById('updatetickerContainer');
     const sellContainer = document.getElementById('sellContainer');
     
     // Toggle the display property
     if (tickerContainer.style.display === 'none' || tickerContainer.style.display === '') {
         tickerContainer.style.display = 'block';
+        updatetickerContainer.style.display = 'none';
         sellContainer.style.display = 'none';
 
     } else {
@@ -39,48 +41,44 @@ function toggleTickerDisplay() {
 }
 
 // Function to toggle the display of the ticker container
-function toggleSellDisplay() {
-    const sellContainer = document.getElementById('sellContainer');
+function toggleUpdateTickerDisplay() {
     const tickerContainer = document.getElementById('tickerContainer');
+    const updatetickerContainer = document.getElementById('updatetickerContainer');
+    const sellContainer = document.getElementById('sellContainer');
+    
+    // Toggle the display property
+    if (updatetickerContainer.style.display === 'none' || updatetickerContainer.style.display === '') {
+        updatetickerContainer.style.display = 'block';
+        tickerContainer.style.display = 'none';
+        sellContainer.style.display = 'none';
+
+    } else {
+        updatetickerContainer.style.display = 'none';
+    }
+}
+
+// Function to toggle the display of the ticker container
+function toggleSellDisplay() {
+    const tickerContainer = document.getElementById('tickerContainer');
+    const updatetickerContainer = document.getElementById('updatetickerContainer');
+    const sellContainer = document.getElementById('sellContainer');
     
     // Toggle the display property
     if (sellContainer.style.display === 'none' || sellContainer.style.display === '') {
         sellContainer.style.display = 'block';
         tickerContainer.style.display = 'none';
+        updatetickerContainer.style.display = 'none';
     } else {
         sellContainer.style.display = 'none';
     }
 }
-// Add event listener to the button
-document.getElementById('addTickerButton').addEventListener('click', toggleTickerDisplay);
 
+// Add event listener to the button
+document.getElementById('addTickerButton').addEventListener('click', toggleNewTickerDisplay);
+// Add event listener to the button
+document.getElementById('updateTickerButton').addEventListener('click', toggleUpdateTickerDisplay);
 // Add event listener to the button
 document.getElementById('soldSharesButton').addEventListener('click', toggleSellDisplay);
-
-//toggle for add ticker textbox or dropdown
-function toggleInput() {
-    var dropdown = document.getElementById('existing-ticker');
-    var textInput = document.getElementById('new-ticker');
-    var toggleButton = document.getElementById('toggleButton');
-    
-    // Toggle visibility of dropdown and textbox
-    if (dropdown.style.display === 'none') {
-        dropdown.style.display = 'block';
-        textInput.style.display = 'none';
-        toggleButton.innerText = 'Enter New Stock';  // Change button text to indicate that the user can enter a new ticker
-        dropdown.required = true; // Set dropdown as required
-        dropdown.disabled = false; // Enable the dropdown
-        textInput.required = false; // Remove requirement from text input
-    } else {
-        dropdown.style.display = 'none';
-        textInput.style.display = 'block';
-        toggleButton.innerText = 'Select Existing Stock';  // Change button text to indicate that the user can select an existing ticker
-        dropdown.required = false; // Remove requirement from dropdown
-        dropdown.disabled = true; // Disable the dropdown
-        textInput.required = true; // Set text input as required
-    }
-}
-
 
 // Function to get CSRF token from cookies (if using Flask-WTF)
 function getCookie(name) {
