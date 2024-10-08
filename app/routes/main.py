@@ -10,7 +10,7 @@ from app.config.db import db  # Import db from the new module
 from app.helpers.stock_utils import fetch_and_process_stock_data
 import app.helpers.process_utils as pu
 import app.helpers.graph_for_analysis as ga
-from app.helpers.fetchclosingprice import get_closing_price, sell_share_to_db, save_ticker_to_db
+from app.helpers.fetchclosingprice import get_closing_price, sell_share_to_db, save_ticker_to_db, update_ticker_to_db, calculate_profit_loss
 # Models
 from app.models.User import User
 from app.models.StockTicker import StockTicker 
@@ -202,10 +202,15 @@ def profile():
     for i in range(len(user_tickers)):
         chart_data_ticker.append([user_tickers[i].ticker])
         chart_data_shares.append([user_tickers[i].shares])
+
+    # Calculate profit/loss here
+    total_profit_loss, total_invested = calculate_profit_loss(current_user.id)
+    
     for ticker in user_tickers:
         # Fetch the current closing price using the get_closing_price function
         closing_price = get_closing_price(ticker.ticker)
-        
+        #Calculate total price for each stock
+        ticker.total_price = round(ticker.shares*ticker.price, 2)
         # Calculate profit and loss if closing price is available
         if closing_price is not None:
             ticker.profit_loss = round((closing_price - ticker.price) * ticker.shares, 2)  # Calculate P&L
@@ -213,12 +218,12 @@ def profile():
         else:
             ticker.profit_loss = None  # Handle the case where the price is not available
 
-    return render_template('profile.html', tickers=user_tickers, chart_data_ticker=chart_data_ticker, chart_data_shares=chart_data_shares)
+    return render_template('profile.html', tickers=user_tickers, chart_data_ticker=chart_data_ticker, chart_data_shares=chart_data_shares, total_profit_loss=total_profit_loss, total_invested=total_invested)
 
 @main_bp.route('/add_ticker', methods=['POST'])
 @login_required
 def add_ticker():
-    ticker = request.form.get('ticker') or request.form.get('new_ticker')
+    ticker = request.form.get('new_ticker')
     shares = request.form.get('shares')
     price = request.form.get('price')
 
@@ -231,6 +236,28 @@ def add_ticker():
         if ticker and shares and price:
             # Save the ticker, shares, and price to the database
             save_ticker_to_db(ticker, user_id, shares, price)
+        else:
+            flash('Failed to add ticker. Please try again.', 'danger')
+    
+    return redirect(url_for('main.profile'))  # Redirect to an appropriate page
+
+@main_bp.route('/update_ticker', methods=['POST'])
+@login_required
+def update_ticker():
+    ticker = request.form.get('existing_ticker')
+    shares = request.form.get('shares')
+    price = request.form.get('price')
+
+    # Access the current user's ID
+    if current_user.is_authenticated:
+        user_id = current_user.id
+        print(f"Current user ID: {user_id}")
+        
+        # Logic to save the ticker to the database or process it
+        #check if ticker, shares or price is none
+        if ticker and shares and price:
+            # Save the ticker, shares, and price to the database
+            update_ticker_to_db(ticker, user_id, shares, price)
         else:
             flash('Failed to add ticker. Please try again.', 'danger')
     
