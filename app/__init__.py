@@ -1,10 +1,10 @@
 from flask import Flask, render_template
 from dotenv import load_dotenv
-import os
 from .config import get_config
-from .routes import main_bp
-import logging
+from .routes import main_bp, stock_bp
 from .middleware.logger import logger_middleware
+import os, logging
+
 
 from .config.db import db  # Import db from the new db module
 from flask_login import LoginManager, current_user
@@ -15,10 +15,10 @@ from .models.User import User
 def create_app():
     # Load environment variables
     load_dotenv()
-
     # Create Flask app instance
     app = Flask(__name__, static_folder='static')
 
+    # Logger Stuff, can ignore
     # Suppress Werkzeug's (Flask's built in logger) request logs
     # Comment out these lines if you want to use the default logger as it suppresses it
     # Configure werkzeug logging
@@ -52,6 +52,8 @@ def create_app():
     # Register blueprints
     #app.register_blueprint(main_bp)
 
+    app.register_blueprint(main_bp)
+    app.register_blueprint(stock_bp)
 
     # Error handlers
     @app.errorhandler(404)
@@ -67,8 +69,10 @@ def create_app():
         pass
         # Custom logger middleware
         logger_middleware()
-
+    
     return app
+
+
 
 
 

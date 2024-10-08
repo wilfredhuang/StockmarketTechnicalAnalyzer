@@ -4,6 +4,7 @@ from datetime import timedelta
 class Config:
     """Base configuration."""
     SECRET_KEY = os.getenv('SECRET_KEY', 'default_secret_key')
+    API_KEY = os.getenv('paypal_api_key', "default value")
     DEBUG = False
     TESTING = False
     # Login Session and DB Stuff
