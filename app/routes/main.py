@@ -223,7 +223,7 @@ def profile():
 @main_bp.route('/add_ticker', methods=['POST'])
 @login_required
 def add_ticker():
-    ticker = request.form.get('new_ticker')
+    ticker = request.form.get('new_ticker').upper()
     shares = request.form.get('shares')
     price = request.form.get('price')
 
@@ -302,7 +302,7 @@ def portfolio():
         predicted_prices, portfolio_data_ranked  = [], []
 
         # Fetch stock data from list of company
-        company = ["AAPL", "GOOGL", "AMZN", "MSFT"]
+        company = ['AAPL', 'MSFT', 'AMZN', 'GOOGL', 'FB', 'TSLA', 'BRK-B', 'JPM', 'JNJ', 'V', 'PG', 'UNH', 'MA', 'NVDA', 'HD', 'DIS', 'BAC', 'ADBE', 'CRM', 'NFLX']
         stock_data = fetch_portfolio_stock_data(company)
 
         # Get the predicted data
