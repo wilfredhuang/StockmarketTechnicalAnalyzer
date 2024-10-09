@@ -7,7 +7,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 # Config
 from app.config.db import db  # Import db from the new module
 # Helpers
-from app.helpers.stock_utils import fetch_and_process_stock_data
+from app.helpers.stock_utils import fetch_and_process_stock_data, fetch_portfolio_stock_data
 import app.helpers.process_utils as pu
 import app.helpers.graph_for_analysis as ga
 from app.helpers.fetchclosingprice import get_closing_price, sell_share_to_db, save_ticker_to_db, update_ticker_to_db, calculate_profit_loss
@@ -296,37 +296,38 @@ def delete_ticker(ticker_id):
 
 
 @main_bp.route('/portfolio', methods=['GET'])
-# @login_required
+@login_required
 def portfolio():
     try:
-        predicted_prices = []
-        company = ["AAPL", "GOOGL", "AMZN", "MSFT"]
-        csv_file = f"stock_data_{datetime.now().strftime('%Y-%m-%d')}.csv"
+        predicted_prices, portfolio_data_ranked  = [], []
 
+        # Fetch stock data from list of company
+        company = ["AAPL", "GOOGL", "AMZN", "MSFT"]
+        stock_data = fetch_portfolio_stock_data(company)
+
+        # Get the predicted data
         for i in range(len(company)):
-            linear_model = pu.train_linear_model(csv_file)
+            linear_model = pu.train_portfolio_linear_model(stock_data)
             date = ''
-            prediction_data, historical_data = pu.predict_linear_model(company[i], date, csv_file, linear_model)
+            prediction_data, historical_data = pu.portfolio_predict_linear_model(company[i], date, stock_data, linear_model)
             predicted_prices.append([company[i], prediction_data.Results[0]])
 
+        # Get user's stock information
         user_tickers = StockTicker.query.filter_by(user_id=current_user.id).all()
-        portfolio_data_ranked = []
 
+        # Check if stocks exists/matches
         for i in range(len(user_tickers)):
             for y in range(len(predicted_prices)):
-                print(str(user_tickers[i].ticker) == predicted_prices[y][0])
-                print(predicted_prices[y][0] )
-                print("lol")
                 if user_tickers[i].ticker == predicted_prices[y][0]:
-                    print("Pass If")
+                    # Calculate Total Price of User stocks, predicted total price, projected profit & loss
                     user_share_total_price = user_tickers[i].price * user_tickers[i].shares
                     predicted_share_total_price = round(predicted_prices[y][1] * user_tickers[i].shares,2)
                     projected_profit_loss = round(predicted_share_total_price - user_share_total_price, 2)
                     portfolio_data_ranked.append([user_tickers[i].ticker, user_tickers[i].shares, user_tickers[i].price, user_share_total_price, round(predicted_prices[y][1], 2), predicted_share_total_price, projected_profit_loss])
 
-        print(portfolio_data_ranked)
-
+        # Format the portfolio data such that it is ranked by profits & loss
         portfolio_data_ranked.sort(reverse = True, key=lambda x:x[5])
+
         return render_template('portfolio.html', portfolio_data=portfolio_data_ranked)
     except Exception as e:
         flash(f'Error with portfolio: {str(e)}', 'danger')

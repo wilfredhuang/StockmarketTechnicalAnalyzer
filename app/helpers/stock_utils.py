@@ -28,3 +28,22 @@ def fetch_and_process_stock_data():
     combined_data.to_csv(f"app/static/data/{csv_filename}", index=False)
     return csv_filename
     
+def fetch_portfolio_stock_data(company):
+    end_date = datetime.now()  # Current date OR datetime(2024, 1, 1) - 01/01/24
+    start_date = end_date - timedelta(days=3652)  # Approximately 10 years
+    
+    all_data = []
+    
+    for stock in company:
+        ticker = yf.Ticker(stock)
+        data = ticker.history(start=start_date, end=end_date)
+        data['Symbol'] = stock
+        all_data.append(data)
+    
+    combined_data = pd.concat(all_data)
+    combined_data.reset_index(inplace=True)
+    
+    # Ensure datetime column is properly formatted
+    combined_data['Date'] = pd.to_datetime(combined_data['Date']).dt.strftime('%Y-%m-%d')
+    
+    return combined_data
