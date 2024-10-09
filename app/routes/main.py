@@ -223,7 +223,7 @@ def profile():
 @main_bp.route('/add_ticker', methods=['POST'])
 @login_required
 def add_ticker():
-    ticker = request.form.get('new_ticker').upper()
+    ticker = request.form.get('new_ticker')
     shares = request.form.get('shares')
     price = request.form.get('price')
 
@@ -235,7 +235,7 @@ def add_ticker():
         # Logic to save the ticker to the database or process it
         if ticker and shares and price:
             # Save the ticker, shares, and price to the database
-            save_ticker_to_db(ticker, user_id, shares, price)
+            save_ticker_to_db(ticker.upper(), user_id, shares, price)
         else:
             flash('Failed to add ticker. Please try again.', 'danger')
     
@@ -305,15 +305,17 @@ def portfolio():
         company = ['AAPL', 'MSFT', 'AMZN', 'GOOGL', 'FB', 'TSLA', 'BRK-B', 'JPM', 'JNJ', 'V', 'PG', 'UNH', 'MA', 'NVDA', 'HD', 'DIS', 'BAC', 'ADBE', 'CRM', 'NFLX']
         stock_data = fetch_portfolio_stock_data(company)
 
-        # Get the predicted data
-        for i in range(len(company)):
-            linear_model = pu.train_portfolio_linear_model(stock_data)
-            date = ''
-            prediction_data, historical_data = pu.portfolio_predict_linear_model(company[i], date, stock_data, linear_model)
-            predicted_prices.append([company[i], prediction_data.Results[0]])
-
         # Get user's stock information
         user_tickers = StockTicker.query.filter_by(user_id=current_user.id).all()
+
+        # Get the predicted data
+        for i in range(len(company)):
+            for y in range(len(user_tickers)):
+                if user_tickers[y].ticker == company[i]:
+                    linear_model = pu.train_portfolio_linear_model(stock_data)
+                    date = ''
+                    prediction_data, historical_data = pu.portfolio_predict_linear_model(company[i], date, stock_data, linear_model)
+                    predicted_prices.append([company[i], prediction_data.Results[0]])
 
         # Check if stocks exists/matches
         for i in range(len(user_tickers)):
