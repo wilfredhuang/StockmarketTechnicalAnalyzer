@@ -177,6 +177,8 @@ def contruct_indicators(group):
     group['bb_5_bw'] = bband_result['BBB_5_2.0']
     group['bb_5_p'] = bband_result['BBP_5_2.0']
 
+    group['Crossings'] = 0
+
     return group
 
 def log_returns(group, periods=[1]):
@@ -228,7 +230,7 @@ def ema_crossover_strategy(TICKER):
     # Price Chart
     start_date = '2010-01-01'
     end_date = '2022-12-31'
-    price_chart = metric_utils.visualise_pricechart(strategy, start=start_date, end=end_date, indicators=['EMA'], signal_marker=True)
+    price_chart = metric_utils.visualise_pricechart(strategy, start=start_date, end=end_date, indicators=['EMA'], buy_sell_01=True)
 
     return [benchmark_performance_stat, strategy_performance_stat, price_chart]
 
@@ -280,7 +282,7 @@ def ema_crossover_rsi_strategy(TICKER):
     # Price Chart
     start_date = '2010-01-01'
     end_date = '2022-12-31'
-    price_chart = metric_utils.visualise_pricechart(strategy, start=start_date, end=end_date, indicators=['EMA'], signal_marker=True)
+    price_chart = metric_utils.visualise_pricechart(strategy, start=start_date, end=end_date, indicators=['EMA'], buy_sell_02=True)
 
     return [benchmark_performance_stat, strategy_performance_stat, price_chart]
 
@@ -335,7 +337,7 @@ def rsi_adx_strategy(TICKER):
     # Price Chart
     start_date = '2010-01-01'
     end_date = '2022-12-31'
-    chart_url = metric_utils.visualise_pricechart(strategy, start=start_date, end=end_date, indicators=['EMA'], signal_marker=True)
+    chart_url = metric_utils.visualise_pricechart(strategy, start=start_date, end=end_date, indicators=['EMA'], buy_sell_03=True)
 
     return [benchmark_performance_stat, strategy_performance_stat, chart_url]
 
