@@ -244,10 +244,7 @@ def visualise_pricechart(
         end: Optional[str] = None,
         ticker: Optional[str] = None,
         indicators: List[str] = None,
-        #signal_marker: bool = False,
-        buy_sell_01: bool = False,
-        buy_sell_02: bool = False,
-        buy_sell_03: bool = False,
+        signal_marker: bool = False
     ) -> go.Figure:
     """
     indicators can be any of ['SMA', 'EMA', 'RSI', 'ADX', 'Bollinger Band']
@@ -307,42 +304,6 @@ def visualise_pricechart(
                     name=f"{name}_{c}",
                     line=dict(color='orange', width=1)
                 ), row=1, col=1)
-
-    #EMA crossover buy indicator
-    if buy_sell_01:
-        #data['Crossings'] = 0
-        #conditions for indicator
-        EMA21_above = ((data['ema_21'] > data['ema_50']) & (data['ema_21'].shift(-1) < data['ema_50'].shift(-1))) #compares both previous value of ema_21 and ema_50 and compare if ema21 is less than ema50 
-        EMA21_below = (data['ema_21'] < data['ema_50']) & (data['ema_21'].shift(-1) > data['ema_50'].shift(-1))   #as we just want the indicator to show when it intersects
-        data.loc[EMA21_below, 'Crossings'] = -1
-        data.loc[EMA21_above, 'Crossings'] = 1
-
-        #plot indicator
-        fig.add_trace(go.Scatter(x=data[data['Crossings'] == 1].index, y=data[data['Crossings'] == 1]['ema_21'],
-            mode='markers', name='Buy', marker=dict(symbol='triangle-up', color='purple', size=15), showlegend=True))
-    
-    #ema + RSI buy indicator
-    if buy_sell_02:
-        #condition for indicator
-        data['ema21_abv'] = data['ema_21'] > data['ema_50']
-        data['ema21_bel'] = data['ema_21'] < data['ema_50']
-
-        #plot indicator 
-        fig.add_trace(go.Scatter(x=data[(data['rsi_14'] < 50) & data['ema21_abv']].index,  y=data[(data['rsi_14'] < 50) & data['ema21_abv']]['close'], 
-                                name='Buy', mode='markers', marker=dict(symbol='triangle-up', color='purple', size=15), showlegend=True))
-    #rsi_adx buy indicator
-    if buy_sell_03:
-
-        #Condition for indicator 
-        data['rsi_adx_buy_signal'] = (data['adx_14'] > 30) & (data['rsi_14'] < 45)
-        data['rsi_adx_sell_signal'] = (data['adx_14'] > 30) & (data['rsi_14'] > 45) 
-
-        #plot indicator
-        fig.add_trace(go.Scatter(x=data[data['rsi_adx_buy_signal']].index, y=data[data['rsi_adx_buy_signal']]['close'], 
-                         name='Buy', mode='markers', marker=dict(symbol='triangle-up', color='purple', size=15), showlegend=True))
-
-            
-    '''
     if signal_marker:
         trade_signals = go.Scatter(
             x=data[data.signal == 1].index,
@@ -360,8 +321,6 @@ def visualise_pricechart(
         name='RSI',
         line=dict(color='blue', width=2)
     ), row=2, col=1)
-    '''
-
     # Update layout for the subplots
     fig.update_layout(
         title='',
