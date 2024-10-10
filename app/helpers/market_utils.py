@@ -212,6 +212,8 @@ def ema_crossover_strategy(TICKER):
     # print the performance statistic of the strategy and the buy-and-hold
     start_date = '2010-01-01'
     end_date = '2022-12-31'
+    # start_date = '2013-12-31'
+    # end_date = '2024-07-31'
     benchmark_performance_stat = metric_utils.benchmark_performance(data, start_date, end_date)
     strategy_performance_stat = metric_utils.strategy_peformance(strategy.loc[start_date:end_date])
     
@@ -265,6 +267,8 @@ def ema_crossover_rsi_strategy(TICKER):
     # print the performance statistic of the strategy and the buy-and-hold
     start_date = '2010-01-01'
     end_date = '2022-12-31'
+    # start_date = '2013-12-31'
+    # end_date = '2024-07-31'
     benchmark_performance_stat = metric_utils.benchmark_performance(data, start_date, end_date)
     strategy_performance_stat = metric_utils.strategy_peformance(strategy.loc[start_date:end_date])
     # visualize the performance of the strategy
@@ -320,6 +324,8 @@ def rsi_adx_strategy(TICKER):
     # print the performance statistic of the strategy and the buy-and-hold
     start_date = '2010-01-01'
     end_date = '2022-12-31'
+    # start_date = '2013-12-31'
+    # end_date = '2024-07-31'
     benchmark_performance_stat = metric_utils.benchmark_performance(data, start_date, end_date)
     strategy_performance_stat = metric_utils.strategy_peformance(strategy.loc[start_date:end_date])
     # visualize the performance of the strategy
@@ -380,7 +386,7 @@ def indicator_ml_strategy(TICKER):
 
     # train-test split
 
-    # We will use data from December 2013 to December 2022 as the training period (9 years of training data).
+    # We will use data from January 2010 to December 2022 as the training period (12 years of training data).
     # After the training period, we will apply a buffer period of 3 months (12 weeks) between training and testing sets.
     # This waiting period is suitable for our shorter-term strategies, which have a 7-day holding period.
     # Finally, the test period will start after the waiting period, i.e., from March 2023 onwards, until the current date.

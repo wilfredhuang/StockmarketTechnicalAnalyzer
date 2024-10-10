@@ -1,4 +1,4 @@
-{% extends "layouts/layout.html" %} {% block title %}Home - Flask Starter App
+{% extends "layouts/layout.html" %} {% block title %} Technical Stock Analyzer
 {{title}}{% endblock %} 
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/custom/stock_analyzer.css') }}"> <!-- Include external CSS -->
@@ -84,7 +84,7 @@
             <label for="ticker" class="form-label mb-0 me-2" 
            data-bs-toggle="tooltip" 
            data-bs-placement="top" 
-           title="Enter the stock ticker symbol">Enter Ticker</label>
+           title="Enter the stock ticker(s), up to 30">Enter Ticker</label>
             <button type="button" class="btn btn-link p-0 ms-auto" id="valid_fetchDataQuickFillBtn">Valid Quick Fill</button>
             <button type="button" class="btn btn-link p-0 ms-auto" id="invalidnaming_fetchDataQuickFillBtn">Invalid Example (Naming) </button>
             <button type="button" class="btn btn-link p-0 ms-auto" id="invalidlength_fetchDataQuickFillBtn">Invalid Example (Ticker Length)</button>
@@ -94,18 +94,22 @@
         
         <div class="row">
           <div class="col-md-6 mb-3">
-            <label for="start" class="form-label">Start Date</label>
+            <label for="start" class="form-label"  data-bs-toggle="tooltip" 
+            data-bs-placement="top" 
+            title="Select the date in DD/MM/YYYY format">Start Date</label>
             <input type="date" class="form-control" id="start" name="start" />
           </div>
           <div class="col-md-6 mb-3">
-            <label for="end" class="form-label">End Date</label>
+            <label for="end" class="form-label" data-bs-toggle="tooltip" 
+            data-bs-placement="top" 
+            title="Select the date in DD/MM/YYYY format">End Date</label>
             <input type="date" class="form-control" id="end" name="end" />
           </div>
         </div>
     <!-- === -->
     <div class="row mb-3">
       <div class="col-md-6">
-        <p>Fetch Data into .csv</p>
+        <p>Fetch dataset into .csv</p>
       </div>
       <div class="col-md-6">
         <button id="fetch-data-btn" class="btn btn-success w-100">
@@ -118,12 +122,12 @@
 
     <div class="row mb-3">
       <div class="col-md-6">
-        <p>Process Data</p>
+        <p>Process dataset</p>
       </div>
     </div>
     <div class="row mb-3">
       <div class="col-md-6">
-        <p>Select Ticker from data set</p>
+        <p>Select ticker from dataset</p>
       </div>
       <div class="col-md-6">
         <select id="ticker-select" class="form-control">
@@ -134,7 +138,7 @@
 
     <div class="row mb-3">
       <div class="col-md-6">
-        <p>Select Strategy</p>
+        <p>Select strategy for analysis</p>
       </div>
       <div class="col-md-6">
         <select id="strategy-select" class="form-control">

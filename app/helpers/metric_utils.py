@@ -309,7 +309,7 @@ def visualise_pricechart(
             x=data[data.signal == 1].index,
             y=data[data.signal == 1]['close'],  
             mode='markers',
-            marker=dict(size=5, color='purple', symbol='triangle-up'),
+            marker=dict(size=10, color='purple', symbol='triangle-up'),
             name='Trade Signal',
         )
         fig.add_trace(trade_signals, row=1, col=1)

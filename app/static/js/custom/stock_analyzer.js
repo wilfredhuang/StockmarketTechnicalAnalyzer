@@ -257,10 +257,10 @@ function loadProcessDataFeature() {
             // Update the 'show-graph' div with the new image
 
             const graphDiv = document.querySelector(".show-graph");
-            graphDiv.innerHTML = `<img src="${data.image_url}" alt="Strategy Performance Graph">`;
+            graphDiv.innerHTML = `<img src="${data.image_url}">`;
 
             const graphDivSecond = document.querySelector(".show-graph-second");
-            graphDivSecond.innerHTML = `<img src="${data.image_url_second}" alt="Strategy Performance Comparison Graph">`;
+            graphDivSecond.innerHTML = `<img src="${data.image_url_second}>"`;
 
             const nums = data.nums;
             const strat_perf_data = data.strat_perf_data;

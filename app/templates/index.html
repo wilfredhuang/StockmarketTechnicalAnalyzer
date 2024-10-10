@@ -1,12 +1,30 @@
 {% extends "layouts/layout.html" %}
 
-{% block title %}Home - Flask Starter App{% endblock %}
+{% block title %}Home - StockTrek{% endblock %}
 
 {% block extra_css %}{% endblock %}
 
-
 {% block content %}
-<h1> Nothing here for now </h1>
+<h1>Welcome to StockTrek</h1>
+<p>
+    Your beginner-friendly guide to mastering investment strategies, indicators, and building strong portfolios. Whether you're new to the stock market or looking to sharpen your skills, StockTrek is here to help you navigate the world of investing with ease and confidence.
+</p>
+
+<h2>Why StockTrek?</h2>
+<ul>
+    <li><strong>Learn at Your Own Pace:</strong> Explore a wide range of investment strategies, from the basics to advanced techniques.</li>
+    <li><strong>Interactive Tools:</strong> Use real-time data and charts to understand key market indicators, trends, and opportunities.</li>
+    <li><strong>Build Your Portfolio:</strong> Apply what you learn by building and tracking your own virtual portfolio.</li>
+</ul>
+
+<h2>Start Your Journey Today</h2>
+<p>
+    Ready to take your first step into the world of investing? <a href="{{ url_for('main.signup') }}">Sign up</a> for free and begin learning about stock market strategies and indicators that can help you build confidence and knowledge.
+</p>
+
+<p>
+    Not sure where to start? We recommend checking out our <a href="{{ url_for('stock.stock_page') }}">Strategy Analysis</a> section or exploring key market indicators.
+</p>
 {% endblock %}
 
 {% block extra_js %}{% endblock %}
