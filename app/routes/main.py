@@ -207,7 +207,6 @@ def add_ticker():
             if is_valid_stock_ticker(ticker):
                 # Save the ticker, shares, and price to the database
                 save_ticker_to_db(ticker, user_id, shares, price)
-                flash(f"{ticker} successfully added to your portfolio!", 'success')
             else:
                 return redirect(url_for('main.profile'))
 
