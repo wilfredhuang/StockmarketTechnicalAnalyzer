@@ -16,8 +16,6 @@ from app.models.User import User
 from app.models.StockTicker import StockTicker 
 
 
-global linear_model
-
 
 main_bp = Blueprint('main', __name__)
 @main_bp.route('/')
@@ -82,36 +80,6 @@ def get_analysis():
     except Exception as e:
         flash(f'Error fetching stock data: {str(e)}', 'danger')
     return render_template('analysis.html', **render_variables)
-
-
-# @main_bp.route('/train-model', methods=['GET'])
-# def train_linear():
-#     try:
-#         linear_model = pu.train_linear_model(present_csv_filename)
-#         flash(f'Model Successfully Trained', 'success')
-#     except Exception as e:
-#         flash(f'Error training model: {str(e)}', 'danger')
-#     return redirect(url_for('main.index'))
-    
-# Predict data using linear model for now trains the model everytime
-@main_bp.route('/prediction', methods=['POST'])
-def predict_linear():
-    try:
-        company = request.form['company']
-        csv_file = f"stock_data_{datetime.now().strftime('%Y-%m-%d')}.csv"
-        linear_model = pu.train_linear_model(csv_file)
-        date = ''
-        prediction_data, historical_data = pu.predict_linear_model(company, date, csv_file, linear_model)
-        prediction_graph = ga.visualise_prediction(prediction_data, historical_data)
-
-        render_variables = {
-            'prediction_graph': prediction_graph,
-        }
-
-        return render_template('prediction.html', **render_variables)
-    except Exception as e:
-        flash(f'Error with prediction: {str(e)}', 'danger')
-    return redirect(url_for('main.index'))
 
 @main_bp.route('/login')
 def login():
@@ -314,8 +282,8 @@ def portfolio():
                 if user_tickers[y].ticker == company[i]:
                     linear_model = pu.train_portfolio_linear_model(stock_data)
                     date = ''
-                    prediction_data, historical_data = pu.portfolio_predict_linear_model(company[i], date, stock_data, linear_model)
-                    predicted_prices.append([company[i], prediction_data.Results[0]])
+                    prediction_data = pu.portfolio_predict_linear_model(company[i], date, stock_data, linear_model)
+                    predicted_prices.append([company[i], prediction_data.Results[9]])
 
         # Check if stocks exists/matches
         for i in range(len(user_tickers)):
