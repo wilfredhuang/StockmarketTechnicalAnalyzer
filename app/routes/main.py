@@ -10,7 +10,7 @@ from app.config.db import db  # Import db from the new module
 from app.helpers.stock_utils import fetch_and_process_stock_data, fetch_portfolio_stock_data
 import app.helpers.process_utils as pu
 import app.helpers.graph_for_analysis as ga
-from app.helpers.fetchclosingprice import get_closing_price, sell_share_to_db, save_ticker_to_db, update_ticker_to_db, calculate_profit_loss, , is_valid_stock_ticker
+from app.helpers.fetchclosingprice import get_closing_price, sell_share_to_db, save_ticker_to_db, update_ticker_to_db, calculate_profit_loss, is_valid_stock_ticker
 # Models
 from app.models.User import User
 from app.models.StockTicker import StockTicker 
