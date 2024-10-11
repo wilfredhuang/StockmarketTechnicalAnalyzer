@@ -10,7 +10,7 @@ from app.config.db import db  # Import db from the new module
 from app.helpers.stock_utils import fetch_and_process_stock_data, fetch_portfolio_stock_data
 import app.helpers.process_utils as pu
 import app.helpers.graph_for_analysis as ga
-from app.helpers.fetchclosingprice import get_closing_price, sell_share_to_db, save_ticker_to_db, update_ticker_to_db, calculate_profit_loss
+from app.helpers.fetchclosingprice import get_closing_price, sell_share_to_db, save_ticker_to_db, update_ticker_to_db, calculate_profit_loss, , is_valid_stock_ticker
 # Models
 from app.models.User import User
 from app.models.StockTicker import StockTicker 
@@ -200,12 +200,19 @@ def add_ticker():
         user_id = current_user.id
         print(f"Current user ID: {user_id}")
         
-        # Logic to save the ticker to the database or process it
+        # Validate form inputs
         if ticker and shares and price:
-            # Save the ticker, shares, and price to the database
-            save_ticker_to_db(ticker.upper(), user_id, shares, price)
+            # Convert ticker to uppercase and validate it using the module function
+            ticker = ticker.upper()
+            if is_valid_stock_ticker(ticker):
+                # Save the ticker, shares, and price to the database
+                save_ticker_to_db(ticker, user_id, shares, price)
+                flash(f"{ticker} successfully added to your portfolio!", 'success')
+            else:
+                return redirect(url_for('main.profile'))
+
         else:
-            flash('Failed to add ticker. Please try again.', 'danger')
+            flash('Failed to add ticker. Please provide valid inputs.', 'danger')
     
     return redirect(url_for('main.profile'))  # Redirect to an appropriate page
 
