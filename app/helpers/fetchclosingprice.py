@@ -141,3 +141,25 @@ def calculate_profit_loss(user_id):
 
     total_profit_loss = total_current_value - total_invested
     return round(total_profit_loss, 2), round(total_invested, 2)
+
+def is_valid_stock_ticker(ticker):
+    """
+    Checks if a stock ticker is valid using the yfinance library.
+    
+    Args:
+        ticker (str): The stock ticker to validate.
+    
+    Returns:
+        bool: True if the ticker is valid, False otherwise.
+    """
+    try:
+        stock_info = yf.Ticker(ticker)
+        # Check if the stock has a 'longName' or any relevant field to validate
+        if stock_info.info.get('longName') is not None:
+            return True
+        else:
+            flash(f"{ticker} is not a valid stock ticker.", 'danger')
+            return False
+    except Exception as e:
+        flash(f"Error fetching data for {ticker}. Please check the ticker or try again later.", 'danger')
+        return False
