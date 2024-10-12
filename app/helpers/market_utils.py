@@ -55,14 +55,10 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-import seaborn as sns
 import yfinance as yf
 import pandas_ta as ta
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, f1_score
-from typing import List
 
 import sys
 import os
