@@ -1,25 +1,23 @@
-from flask import Flask, current_app, render_template, send_file, jsonify, request, flash
-import pandas as pd
-import yfinance as yf
-from dash import Dash, dcc, html
-import plotly.express as px
+from flask import render_template, jsonify, request
+from flask import Blueprint
 import plotly
 import json
-from flask import Blueprint
+# Data Collection, Processing, Analysis, Prediction module
 from app.helpers.market_utils import (ema_crossover_rsi_strategy, ema_crossover_strategy,
     fetch_stock_data, indicator_ml_strategy, rsi_adx_strategy)
+# Input validation module
 from app.helpers.validation_utils import (validate_dates, validate_ticker_list)
-
 stock_bp = Blueprint('stock', __name__)
 
 # Wilfred's Portion
-
 # Main Page
 @stock_bp.route('/stock-analyzer')
 def stock_page():
     # Define render variables
     render_variables = {
     }
+    # Note that this is the only endpoint in this route that renders a page, because we are using AJAX style POST requests to render data dynamically
+    # See /static/js/custom/stock_analyzer.js for the Javascript DOM handling code
     return render_template('stock_analyzer.html', **render_variables)
 
 # Simply a POST request used to test form retrieval with javascript, redundant to web app
@@ -36,31 +34,31 @@ def sandbox_request():
 # Fetch Stock Data Request
 @stock_bp.route('/fetch-stock-data', methods=['POST'])
 def fetch_stock_data_request():
+    # ---Hardcoded Inputs Sample---
+    # TICKERS = [
+    # 'KO','PEP','WMT', # consumer staples
+    # 'SBUX','MCD', # consumer discretionary
+    # 'AAL','DAL','F', # industrials
+    # 'VZ', 'T', 'DIS', # communication services
+    # 'BAC','JPM','MA','V', # financials
+    # 'ORCL','AMD','NVDA','AAPL','MSFT', # information technology
+    # ] 
+    # START_DATE = "2000-01-01"
+    # END_DATE = "2024-07-31"
+    # fetch_stock_data(TICKERS, START_DATE, END_DATE)
+
     # Retrieve Input from Web App
     data = request.get_json()
     errors = {}
     tickers = data.get('tickers')
     start_date = data.get('start_date')
     end_date = data.get('end_date')
-    # --Input Validation--
-    ticker_valid, ticker_msg = validate_ticker_list(data.get('tickers'))
-    date_valid, date_msg = validate_dates(data.get('start_date'), data.get('end_date'))
-    # Transform Web App Form Input to proper list data type for yfinance api call
+    # Input Validation: see validation_utils.py 
+    ticker_valid, ticker_msg = validate_ticker_list(data.get('tickers')) # Validate if tickers are valid. 
+    date_valid, date_msg = validate_dates(data.get('start_date'), data.get('end_date'))  # Validate if dates are logically correct
     if date_valid & ticker_valid: 
-        tickers_list = [ticker.strip() for ticker in tickers.split(',')]
-        # ---Hardcoded Inputs Sample---
-        # TICKERS = [
-        # 'KO','PEP','WMT', # consumer staples
-        # 'SBUX','MCD', # consumer discretionary
-        # 'AAL','DAL','F', # industrials
-        # 'VZ', 'T', 'DIS', # communication services
-        # 'BAC','JPM','MA','V', # financials
-        # 'ORCL','AMD','NVDA','AAPL','MSFT', # information technology
-        # ] 
-        # START_DATE = "2000-01-01"
-        # END_DATE = "2024-07-31"
-        # fetch_stock_data(TICKERS, START_DATE, END_DATE)
-        fetch_stock_data(tickers_list, start_date, end_date)
+        tickers_list = [ticker.strip() for ticker in tickers.split(',')]     # Transform Tickers Input to proper list data type for yfinance api call
+        fetch_stock_data(tickers_list, start_date, end_date)  # yfinance API call to fetch data and store in .csv file in static/data, two files: ohlcv.csv, spy.csv
         return jsonify(success=True, message="Data Fetched to CSV File!", tickers_list=tickers_list)
     else:
         if ticker_valid == False:
@@ -72,18 +70,22 @@ def fetch_stock_data_request():
 # Process Stock Data Request
 @stock_bp.route('/process-stock-data', methods=['POST'])
 def process_stock_data_request():
+    # Retrieve Input from Web App
     data = request.get_json() 
     strategy = data.get('strategy')
-    ticker = data.get('ticker')
-
+    ticker = data.get('ticker') 
     if not strategy:
         return jsonify({"error": "Strategy not provided"}), 400  # Return error if no strategy
-    
+    # Control Flow for the various different strategies
+    # The data processing, analysis and predictions logic are handled in the market_utils.py helper file, this keeps the route file abstract and readable
+    # Note the similarities that each strategy has: 
+    # for example in variables returned, one set of benchmark data, one set of strategy performance data, one plotly figure json encoded for frontend render (For Price Visualisation Chart)
+    # lastly, image_url for the 'Strategy Performance Charts' image(s) that are already generated under the respective strategy functions
     match strategy:
         case "1":
-            print("=== Using Strategy 1: EMA Crossover ===")
-            data_statistics = ema_crossover_strategy(ticker)
-            benchmark_data = data_statistics[0]
+            print("=== Using Strategy 1: EMA Crossover ===") 
+            data_statistics = ema_crossover_strategy(ticker) 
+            benchmark_data = data_statistics[0]  
             strat_perf_data = data_statistics[1]
             fig = data_statistics[2]
             graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)

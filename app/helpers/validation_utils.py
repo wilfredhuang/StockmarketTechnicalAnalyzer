@@ -73,7 +73,7 @@ def validate_ticker_list(ticker_list):
     tickers = [ticker.strip() for ticker in ticker_list.split(',')]
     # Check if the number of tickers exceeds 30
     if len(tickers) > 30:
-        return False, "The list contains more than 30 ticker symbols, which is not allowed."
+        return False, "The list contains more than 30 ticker symbols, which is not allowed." # this can be adjusted for higher/lesser values
     invalid_tickers = []
     for ticker in tickers:
         # Validate each ticker using yfinance

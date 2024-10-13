@@ -1,28 +1,25 @@
-# We just need these to manually these 5 packages, it's dependent modules will install along with them.
+# Main Packages for the Web App
 Flask==3.0.3
 setuptools==74.1.2 
+# Environment variable handling
+python-dotenv== 1.0.1
 # yfinance API
 yfinance==0.2.43
-# environment variable handling
-python-dotenv== 1.0.1
-# Force Numpy to use 1.26.4 for pandas_ta comptability
-numpy==1.26.4
-# Analysis, Visualisation Packages
+# Analysis
+numpy==1.26.4 # Force Numpy to use 1.26.4 for pandas_ta comptability
 pandas_ta== 0.3.14b0
+scikit-learn==1.5.2
+# Visualisation
 matplotlib==3.9.2
 plotly==5.22.0
-dash==2.18.1
-seaborn==0.13.2
-scikit-learn==1.5.2
-# Additional Features for the web app
+# Login System, Persistent Storage for Portfolio data etc
 Flask-Login==0.6.3
 Flask-Migrate==4.0.7
 Flask-SQLAlchemy==3.1.1
 Flask-WTF==1.2.1
 Werkzeug==3.0.4
 WTForms==3.1.2
-
-# Manually Install Jupyter Packages, as imported notebook files might not have these packages automatically set up for some reason.
+# Jupyter notebook related packages to develop with inside vscode
 jupyter
 jupyter_client
 jupyter_core 
