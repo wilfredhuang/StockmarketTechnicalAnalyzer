@@ -259,8 +259,12 @@ function loadProcessDataFeature() {
             const graphDiv = document.querySelector(".show-graph");
             graphDiv.innerHTML = `<img src="${data.image_url}">`;
 
+            console.log(data.image_url);
+            console.log(data.image_url_second);
+
             const graphDivSecond = document.querySelector(".show-graph-second");
-            graphDivSecond.innerHTML = `<img src="${data.image_url_second}>"`;
+            graphDivSecond.innerHTML = `<img src="${data.image_url_second}">`;
+
 
             const nums = data.nums;
             const strat_perf_data = data.strat_perf_data;
