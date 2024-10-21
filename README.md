@@ -2,19 +2,48 @@
 
 ### Dependencies 
 ```
-Python v3.12.4 (In line with conda latest support)
+
+Python v3.12.0+ 
 Bootstrap v5.2.3 [Front-end library]
 conda 24.5.0 [Virtual Environment]
+
 ```
 requirements.txt (Pip packages)
 
-For now these are the packages required, they will also install other sub-packages dependent like numpy, pandas etc.
+These are the main-packages required.
 ```
+# Main Packages for the Web App
 Flask==3.0.3
-yfinance==0.2.43
-python-dotenv== 1.0.1
 setuptools==74.1.2 
+# Environment variable handling
+python-dotenv== 1.0.1
+# yfinance API
+yfinance==0.2.43
+# Analysis
+numpy==1.26.4 # Force Numpy to use 1.26.4 for pandas_ta comptability
+pandas_ta== 0.3.14b0
+scikit-learn==1.5.2
+# Visualisation
 matplotlib==3.9.2
+plotly==5.22.0
+# Login System, Persistent Storage for Portfolio data etc
+Flask-Login==0.6.3
+Flask-Migrate==4.0.7
+Flask-SQLAlchemy==3.1.1
+Flask-WTF==1.2.1
+Werkzeug==3.0.4
+WTForms==3.1.2
+# Jupyter notebook related packages to develop with inside vscode
+jupyter
+jupyter_client
+jupyter_core 
+notebook 
+ipykernel
+ipython
+nbformat==5.10.4
+nbconvert
+traitlets
+stack_data
 ```
 ### VS Code Extensions used in development
 Download these extension for this project.
@@ -28,7 +57,7 @@ Jupyter Cell Tags (ms-toolsai.vscode-jupyter-cell-tags)
 Jupyter Slideshow (ms-toolsai.vscode-jupyter-slideshow)
 ```
 
-### Instructions
+### Instruction
 1. Clone repository in github desktop, create a new branch based on 'development', do your work in that branch
 2. Install Conda Environment if haven't done so and activate it
 3. Install the python packages
@@ -55,14 +84,6 @@ pip uninstall -r uninstall.txt -y #Base on the list uninstall all installed pack
 pip install -r requirements.txt   # Reinstall if needed
 ```
 
-Create .env file in the root directory (same as the run.py, README.md files) 
+4.Create .env file in the root directory (same dir as the run.py, README.md files) 
 ```
 ```
-
-### How it works
-
-
-### Feature Outline
-
-
-=== TODO ===
